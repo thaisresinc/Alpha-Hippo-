@@ -1,0 +1,89 @@
+
+<h2 class="sr-only">Training Bingo — interactive reference card for first calls. Tick each square when it happens during your training calls.</h2>
+
+<style>
+.bingo-wrap { padding: 1.5rem 0 1rem; }
+.bingo-header { margin-bottom: 1rem; }
+.bingo-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-text-secondary); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.bingo-eyebrow::before { content: ''; width: 18px; height: 1.5px; background: var(--color-text-secondary); display: inline-block; }
+.bingo-title { font-size: 22px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 6px; }
+.bingo-title span { color: var(--color-text-info); }
+.bingo-instruction { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; padding: 10px 14px; border-left: 2px solid var(--color-border-info); background: var(--color-background-info); border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; margin-bottom: 1rem; }
+.bingo-instruction strong { color: var(--color-text-info); font-weight: 500; }
+.bingo-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-bottom: 1rem; }
+.bingo-cell { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px 10px 8px; min-height: 88px; display: flex; flex-direction: column; gap: 6px; background: var(--color-background-primary); cursor: pointer; transition: border-color 0.15s, background 0.15s; position: relative; }
+.bingo-cell:hover { border-color: var(--color-border-secondary); background: var(--color-background-secondary); }
+.bingo-cell.ticked { border-color: var(--color-border-info); background: var(--color-background-info); }
+.bingo-cell.star-cell { border-color: var(--color-border-warning); background: var(--color-background-warning); }
+.bingo-cell.star-cell.ticked { border-width: 1.5px; }
+.cell-top { display: flex; align-items: center; justify-content: space-between; }
+.cell-emoji { font-size: 16px; line-height: 1; }
+.cell-check { width: 16px; height: 16px; border-radius: 4px; border: 1px solid var(--color-border-secondary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--color-background-primary); transition: all 0.15s; }
+.bingo-cell.ticked .cell-check { background: var(--color-background-primary); border-color: var(--color-border-info); }
+.bingo-cell.ticked .cell-check::after { content: ''; width: 8px; height: 8px; background: var(--color-text-info); border-radius: 2px; display: block; }
+.bingo-cell.star-cell .cell-check { border-color: var(--color-border-warning); }
+.bingo-cell.star-cell.ticked .cell-check::after { background: var(--color-text-warning); }
+.cell-text { font-size: 11px; color: var(--color-text-primary); line-height: 1.4; font-weight: 400; flex: 1; }
+.bingo-cell.ticked .cell-text { color: var(--color-text-info); font-weight: 500; }
+.bingo-cell.star-cell .cell-text { color: var(--color-text-warning); font-weight: 500; }
+.star-tag { font-size: 10px; color: var(--color-text-warning); font-weight: 500; margin-top: auto; }
+.bingo-counter { font-size: 12px; color: var(--color-text-secondary); text-align: center; margin-bottom: 12px; }
+.bingo-counter span { color: var(--color-text-primary); font-weight: 500; }
+.bingo-narration { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px 18px; background: var(--color-background-secondary); display: flex; gap: 12px; align-items: flex-start; }
+.narr-q { font-size: 28px; color: var(--color-text-secondary); line-height: 1; margin-top: -2px; flex-shrink: 0; font-weight: 400; }
+.narr-text { font-size: 13px; color: var(--color-text-secondary); line-height: 1.65; font-style: italic; }
+.narr-text strong { color: var(--color-text-primary); font-style: normal; font-weight: 500; }
+</style>
+
+<div class="bingo-wrap">
+  <div class="bingo-header">
+    <div class="bingo-eyebrow">Alpha Hippo · Day 3</div>
+    <div class="bingo-title">Training <span>Bingo.</span></div>
+  </div>
+
+  <div class="bingo-instruction">
+    <strong>Keep this open on your second screen during training calls.</strong> Tick each square when it happens. The goal is not bingo — the goal is to notice that every situation on this card is something you have already learned how to handle.
+  </div>
+
+  <div class="bingo-counter">You've ticked <span id="count">0</span> of 25 squares</div>
+
+  <div class="bingo-grid" id="grid">
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">🤔</span><div class="cell-check"></div></div><div class="cell-text">Customer doesn't remember the door knocker</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">📵</span><div class="cell-check"></div></div><div class="cell-text">Hang-up before you finish your opener</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">📍</span><div class="cell-check"></div></div><div class="cell-text">"Where are you calling from?"</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">🏠</span><div class="cell-check"></div></div><div class="cell-text">Customer says they already have solar</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">⏱️</span><div class="cell-check"></div></div><div class="cell-text">Call lasts more than 2 minutes</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">💸</span><div class="cell-check"></div></div><div class="cell-text">"We just can't afford it right now"</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">🏛️</span><div class="cell-check"></div></div><div class="cell-text">Customer asks about the government rebate</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">👫</span><div class="cell-check"></div></div><div class="cell-text">Partner isn't available</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">😅</span><div class="cell-check"></div></div><div class="cell-text">You forget what to say and pause</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">🤨</span><div class="cell-check"></div></div><div class="cell-text">"Is this a sales call?"</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">🔇</span><div class="cell-check"></div></div><div class="cell-text">No answer — 3 calls in a row</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">🔑</span><div class="cell-check"></div></div><div class="cell-text">Customer mentions they're renting</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">📅</span><div class="cell-check"></div></div><div class="cell-text">You successfully attempt a booking</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">☀️</span><div class="cell-check"></div></div><div class="cell-text">Customer asks how solar works</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">🚫</span><div class="cell-check"></div></div><div class="cell-text">"We're not interested"</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">😊</span><div class="cell-check"></div></div><div class="cell-text">Customer is genuinely friendly</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">📬</span><div class="cell-check"></div></div><div class="cell-text">Voicemail</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">🎯</span><div class="cell-check"></div></div><div class="cell-text">You use a DTRC objection handle</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">🔋</span><div class="cell-check"></div></div><div class="cell-text">Customer asks about batteries</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">💡</span><div class="cell-check"></div></div><div class="cell-text">You immediately know what you'd do differently</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">📞</span><div class="cell-check"></div></div><div class="cell-text">"Call me back later"</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">📦</span><div class="cell-check"></div></div><div class="cell-text">Customer mentions they're moving</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">😂</span><div class="cell-check"></div></div><div class="cell-text">You make someone laugh</div></div>
+    <div class="bingo-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">🤝</span><div class="cell-check"></div></div><div class="cell-text">"We just signed with someone else"</div></div>
+    <div class="bingo-cell star-cell" onclick="tick(this)"><div class="cell-top"><span class="cell-emoji">⭐</span><div class="cell-check"></div></div><div class="cell-text">You book your first appointment</div><div class="star-tag">Tell your TL →</div></div>
+  </div>
+
+  <div class="bingo-narration">
+    <div class="narr-q">"</div>
+    <div class="narr-text">Every square on this card is something you have already covered in training. <strong>You are more prepared than you feel right now.</strong> Go find out.</div>
+  </div>
+</div>
+
+<script>
+function tick(cell) {
+  cell.classList.toggle('ticked');
+  document.getElementById('count').textContent = document.querySelectorAll('.bingo-cell.ticked').length;
+}
+</script>
