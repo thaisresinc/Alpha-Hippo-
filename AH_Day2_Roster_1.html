@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Roster, Hours & Time Zones | Alpha Hippo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;
+  --sky:#00AEEF;--sky2:#0090C4;
+  --sky-lt:#EAF6FD;--sky-bg:#F2FAFF;
+  --green:#0B7A4E;--green-lt:#E3F5EC;
+  --gold:#D4940A;--gold-lt:#FEF8E6;
+  --red:#C0392B;--red-lt:#FDECEA;
+  --body:#1A2A32;--muted:#5A6E78;--light:#F4F8FB;
+  --border:#C8DDE8;--line:#E2EEF4;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --shadow:0 1px 3px rgba(10,53,66,.07),0 4px 14px rgba(10,53,66,.09);
+  --shadow-lg:0 6px 24px rgba(10,53,66,.13),0 16px 48px rgba(10,53,66,.10);
+}
+
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:var(--light);color:var(--body);min-height:100vh;overflow-x:hidden;}
+
+#prog{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,174,239,.15);z-index:200;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00C4FF);width:0%;transition:width .4s;}
+
+/* ── HERO ── */
+#hero{background:var(--navy);padding:0;position:relative;overflow:hidden;min-height:300px;display:flex;flex-direction:column;justify-content:flex-end;}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,174,239,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,.06) 1px,transparent 1px);background-size:48px 48px;}
+.hero-glow{position:absolute;top:-120px;right:-80px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,174,239,.15) 0%,transparent 70%);pointer-events:none;}
+.hero-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky);}
+.hero-inner{max-width:900px;margin:0 auto;padding:52px 28px 40px;position:relative;z-index:1;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.28);border-radius:20px;padding:5px 14px;font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.22em;margin-bottom:16px;}
+.hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--sky);display:inline-block;}
+.hero-title{font-family:var(--serif);color:#fff;font-size:clamp(28px,4.5vw,46px);line-height:1.05;margin-bottom:10px;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.52);font-size:14px;line-height:1.7;max-width:500px;margin-bottom:22px;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.hero-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:5px 12px;font-size:11px;color:rgba(255,255,255,.55);}
+
+/* ── LAYOUT ── */
+.section{padding:40px 0;}
+.inner{max-width:900px;margin:0 auto;padding:0 28px;}
+.s-label{font-size:10px;font-weight:700;letter-spacing:.2em;color:var(--sky);text-transform:uppercase;margin-bottom:6px;}
+.s-title{font-family:var(--serif);font-size:clamp(22px,3vw,30px);color:var(--navy);margin-bottom:6px;}
+.s-bar{width:36px;height:3px;background:var(--sky);border-radius:2px;margin-bottom:20px;}
+.sep{height:1px;background:var(--line);max-width:900px;margin:0 auto;}
+
+/* ── INFO CARDS ── */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.info-card{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:18px 18px;box-shadow:var(--shadow);}
+.info-card.full{grid-column:1/-1;}
+.info-card.sky{border-top:3px solid var(--sky);}
+.info-card.green{border-top:3px solid var(--green);}
+.info-card.gold{border-top:3px solid var(--gold);}
+.info-card.navy{border-top:3px solid var(--navy);}
+.ic-label{font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--sky);margin-bottom:6px;}
+.ic-label.green{color:var(--green);}
+.ic-label.gold{color:var(--gold);}
+.ic-label.navy{color:var(--navy);}
+.ic-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:5px;}
+.ic-text{font-size:13px;color:var(--muted);line-height:1.65;}
+.ic-text strong{color:var(--navy);}
+
+/* ── TIMEZONE VISUAL ── */
+.tz-visual{display:flex;align-items:center;gap:0;margin-bottom:14px;background:#fff;border:1.5px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);}
+.tz-card{flex:1;padding:24px 24px;text-align:center;}
+.tz-card.bali{background:var(--sky-bg);}
+.tz-card.au{background:var(--green-lt);}
+.tz-emoji{font-size:24px;margin-bottom:8px;}
+.tz-label{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;margin-bottom:2px;}
+.tz-card.bali .tz-label{color:var(--sky2);}
+.tz-card.au .tz-label{color:var(--green);}
+.tz-clock{font-family:var(--serif);font-size:36px;color:var(--navy);line-height:1;margin-bottom:4px;}
+.tz-zone{font-size:11px;color:var(--muted);}
+.tz-divider{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 20px;gap:6px;flex-shrink:0;}
+.tz-arrow{font-size:20px;color:var(--border);}
+.tz-gap-pill{background:var(--navy);border-radius:20px;padding:5px 14px;display:flex;flex-direction:column;align-items:center;}
+.tz-gap-num{font-family:var(--serif);font-size:20px;color:var(--sky);line-height:1;}
+.tz-gap-label{font-size:8px;font-weight:700;letter-spacing:.1em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:1px;}
+
+/* ── PROTOCOL CARDS ── */
+.protocol-list{display:flex;flex-direction:column;gap:10px;}
+.protocol-card{display:flex;gap:14px;align-items:flex-start;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow);}
+.protocol-icon{font-size:22px;flex-shrink:0;margin-top:2px;}
+.protocol-body{}
+.protocol-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.protocol-text{font-size:13px;color:var(--muted);line-height:1.65;}
+.protocol-text strong{color:var(--navy);}
+.protocol-tag{display:inline-block;margin-top:8px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:20px;}
+.tag-sky{background:var(--sky-lt);color:var(--sky2);}
+.tag-red{background:var(--red-lt);color:var(--red);}
+.tag-green{background:var(--green-lt);color:var(--green);}
+.tag-gold{background:var(--gold-lt);color:var(--gold);}
+
+/* ── HOLIDAY TABLE ── */
+.holiday-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.holiday-card{background:#fff;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);}
+.holiday-head{padding:12px 16px;display:flex;align-items:center;gap:10px;}
+.holiday-head.au{background:var(--green-lt);border-bottom:1.5px solid rgba(11,122,78,.15);}
+.holiday-head.bali{background:var(--gold-lt);border-bottom:1.5px solid rgba(212,148,10,.15);}
+.holiday-flag{font-size:20px;}
+.holiday-head-label{font-size:11px;font-weight:700;color:var(--navy);}
+.holiday-body{padding:14px 16px;font-size:13px;color:var(--muted);line-height:1.65;}
+.holiday-body strong{color:var(--navy);}
+
+/* ── DLS BOX ── */
+.dls-box{background:var(--navy);border-radius:12px;padding:18px 20px;display:flex;gap:14px;align-items:flex-start;}
+.dls-icon{font-size:22px;flex-shrink:0;}
+.dls-label{font-size:9.5px;font-weight:700;letter-spacing:.16em;color:var(--sky);margin-bottom:5px;}
+.dls-text{font-size:13px;color:rgba(255,255,255,.75);line-height:1.65;}
+.dls-text strong{color:#fff;}
+
+/* ── NARRATION ── */
+.narration{background:var(--navy);border-radius:14px;padding:22px 26px;display:flex;gap:16px;align-items:flex-start;border-left:4px solid var(--sky);}
+.narration-q{font-size:24px;color:var(--sky);line-height:1;flex-shrink:0;margin-top:-4px;}
+.narration-text{font-size:14px;color:rgba(255,255,255,.78);line-height:1.75;font-style:italic;}
+.narration-text strong{color:#fff;font-style:normal;}
+
+/* ── COMPLETION ── */
+#completion{display:none;background:var(--navy2);padding:48px 28px;}
+.cpl-inner{max-width:520px;margin:0 auto;text-align:center;}
+.cpl-icon{font-size:48px;margin-bottom:12px;}
+.cpl-title{font-family:var(--serif);color:#fff;font-size:28px;margin-bottom:8px;}
+.cpl-title span{color:var(--sky);font-style:italic;}
+.cpl-sub{color:rgba(255,255,255,.5);font-size:13px;line-height:1.7;margin-bottom:20px;}
+.cpl-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;}
+.cpl-chip{background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.25);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600;color:var(--sky);}
+
+@media(max-width:600px){
+  .info-grid{grid-template-columns:1fr;}
+  .info-card.full{grid-column:auto;}
+  .tz-visual{flex-direction:column;}
+  .tz-divider{flex-direction:row;padding:10px 16px;}
+  .holiday-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div id="prog"><div id="prog-fill"></div></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span></span>ALPHA HIPPO · DAY 2</div>
+    <h1 class="hero-title">Roster, Hours<br><em>&amp; Time Zones</em></h1>
+    <p class="hero-sub">When you work, what time it is, and what to do when life happens. Know this before your first shift.</p>
+    <div class="hero-pills">
+      <div class="hero-pill">🇮🇩 Bali — WITA (UTC+8)</div>
+      <div class="hero-pill">🇦🇺 Brisbane — AEST (UTC+10)</div>
+      <div class="hero-pill">📅 Mon – Sat · 7:30am – 3:30pm Bali</div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 1 — SHIFT STRUCTURE -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">Section 1</div>
+    <div class="s-title">Shift Structure</div>
+    <div class="s-bar"></div>
+    <div class="info-grid">
+      <div class="info-card sky">
+        <div class="ic-label">SHIFT HOURS</div>
+        <div class="ic-title">7:30am – 3:30pm · Bali Time</div>
+        <div class="ic-text">Monday to Saturday. All times are Bali local (WITA). The schedule runs in three sprints with a team check-in at the start and a call review at the end.</div>
+      </div>
+      <div class="info-card sky">
+        <div class="ic-label">TOTAL HOURS</div>
+        <div class="ic-title">6–8 active hours per day</div>
+        <div class="ic-text">Includes 1 hour of set meeting time and training daily. Active phone time is tracked via <strong>Insightful</strong> and/or <strong>Dialer.io</strong>.</div>
+      </div>
+      <div class="info-card full sky">
+        <div class="ic-label">TEAM MEETINGS & CHECK-INS</div>
+        <div class="ic-title">All set to Bali time</div>
+        <div class="ic-text">Team meetings and catch-ups run on <strong>Bali time</strong> — not AU time. Daily check-ins at <strong>7:30am, 10:15am, and 1:00pm</strong>. Weekly summary every Monday at 7:30am. If you're in a different location, calculate your local equivalent and protect these times in your calendar.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- SECTION 2 — TIME ZONES -->
+<div class="section" style="background:#fff;">
+  <div class="inner">
+    <div class="s-label">Section 2</div>
+    <div class="s-title">Time Zones</div>
+    <div class="s-bar"></div>
+
+    <div class="tz-visual">
+      <div class="tz-card bali">
+        <div class="tz-emoji">🇮🇩</div>
+        <div class="tz-label">Bali</div>
+        <div class="tz-clock">9:00am</div>
+        <div class="tz-zone">WITA — UTC+8</div>
+      </div>
+      <div class="tz-divider">
+        <div class="tz-arrow">→</div>
+        <div class="tz-gap-pill">
+          <div class="tz-gap-num">+2h</div>
+          <div class="tz-gap-label">standard</div>
+        </div>
+        <div class="tz-arrow">→</div>
+      </div>
+      <div class="tz-card au">
+        <div class="tz-emoji">🇦🇺</div>
+        <div class="tz-label">Brisbane</div>
+        <div class="tz-clock">11:00am</div>
+        <div class="tz-zone">AEST — UTC+10</div>
+      </div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card green">
+        <div class="ic-label green">WHAT THIS MEANS IN PRACTICE</div>
+        <div class="ic-text">When it's <strong>7:30am in Bali</strong>, it's already <strong>9:30am in Brisbane</strong>. Your TL and the AU team are already at their desks. Plan your day with this in mind — especially for callbacks and anything that requires TL support.</div>
+      </div>
+      <div class="info-card green">
+        <div class="ic-label green">DAYLIGHT SAVING</div>
+        <div class="ic-text">Australia observes daylight saving from <strong>October to April</strong>. During this period, Brisbane moves to AEDT (UTC+11) — the gap increases from 2 hours to <strong>3 hours</strong>. The schedule stays the same — Bali absorbs the change.</div>
+      </div>
+    </div>
+
+    <div class="dls-box">
+      <div class="dls-icon">🌏</div>
+      <div>
+        <div class="dls-label">SCHEDULE STABILITY</div>
+        <div class="dls-text">The schedule stays the same during daylight saving. <strong>It can be subject to change based on contact %</strong> — Luke will communicate any adjustments in advance.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- SECTION 3 — RUNNING LATE / SICK -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">Section 3</div>
+    <div class="s-title">Running Late or Calling in Sick</div>
+    <div class="s-bar"></div>
+    <div class="protocol-list">
+
+      <div class="protocol-card">
+        <div class="protocol-icon">⏰</div>
+        <div class="protocol-body">
+          <div class="protocol-title">Running Late</div>
+          <div class="protocol-text"><strong>WhatsApp text to Luke as soon as you know.</strong> Don't wait until your start time to let him know — notify ASAP the moment you realise you'll be late. Include an estimated arrival time.</div>
+          <span class="protocol-tag tag-sky">📱 WhatsApp text → TL</span>
+        </div>
+      </div>
+
+      <div class="protocol-card">
+        <div class="protocol-icon">🤒</div>
+        <div class="protocol-body">
+          <div class="protocol-title">Calling in Sick</div>
+          <div class="protocol-text"><strong>The night before</strong> if you know, or <strong>first thing in the morning</strong> if you wake up unwell. Contact by <strong>WhatsApp call</strong> — not a text, not a message in the group chat. Call Luke directly.</div>
+          <span class="protocol-tag tag-red">📞 WhatsApp call → TL</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- SECTION 4 — PUBLIC HOLIDAYS -->
+<div class="section" style="background:#fff;">
+  <div class="inner">
+    <div class="s-label">Section 4</div>
+    <div class="s-title">Public Holidays</div>
+    <div class="s-bar"></div>
+    <div class="holiday-grid">
+      <div class="holiday-card">
+        <div class="holiday-head au">
+          <span class="holiday-flag">🇦🇺</span>
+          <div class="holiday-head-label">Australian Public Holidays</div>
+        </div>
+        <div class="holiday-body">The Bali team follows <strong>NSW and ACT public holidays</strong>. On these days, the team is offline. Lead volume will be lower and dialling windows may shift — customers in those states are less available.</div>
+      </div>
+      <div class="holiday-card">
+        <div class="holiday-head bali">
+          <span class="holiday-flag">🇮🇩</span>
+          <div class="holiday-head-label">Balinese Public Holidays</div>
+        </div>
+        <div class="holiday-body">Balinese public holidays are <strong>not observed</strong> as standard rest days for the team. If you have a specific holiday you need to take, discuss it with Luke in advance — standard leave protocols apply.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- NARRATION -->
+<div class="section">
+  <div class="inner">
+    <div class="narration">
+      <div class="narration-q">"</div>
+      <div class="narration-text">Knowing your hours and the time zone gap isn't admin detail — it affects every interaction with the team. <strong>If you're in Bali and it's 9am for you, it's already 11am in Brisbane.</strong> Plan accordingly.</div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPLETION -->
+<div id="completion">
+  <div class="cpl-inner">
+    <div class="cpl-icon">🗓️</div>
+    <div class="cpl-title">Module <span>complete.</span></div>
+    <div class="cpl-sub">You know your hours, your time zone, and what to do when life happens. Next up — how you'll be coached and supported.</div>
+    <div class="cpl-chips">
+      <span class="cpl-chip">✓ 7:30am–3:30pm Bali time</span>
+      <span class="cpl-chip">✓ +2h ahead of Brisbane</span>
+      <span class="cpl-chip">✓ Late → WhatsApp TL ASAP</span>
+      <span class="cpl-chip">✓ Sick → WhatsApp call, night before</span>
+      <span class="cpl-chip">✓ Offline on NSW/ACT holidays</span>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('scroll',()=>{
+  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('prog-fill').style.width=Math.min(p,100)+'%';
+  if(p>90 && document.getElementById('completion').style.display==='none'){
+    document.getElementById('completion').style.display='block';
+  }
+});
+</script>
+</body>
+</html>
