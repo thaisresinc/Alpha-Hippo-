@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Commission Structure & Pay | Alpha Hippo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;--sky:#00AEEF;--sky2:#0090C4;
+  --sky-lt:#EAF6FD;--sky-bg:#F2FAFF;
+  --green:#0B7A4E;--green-lt:#E3F5EC;
+  --gold:#D4940A;--gold-lt:#FEF8E6;
+  --red:#B5251B;--red-lt:#FDECEB;
+  --purple:#6B4FBB;
+  --body:#1A2A32;--muted:#5A6E78;--light:#F4F8FB;
+  --border:#C8DDE8;--line:#E2EEF4;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --shadow:0 1px 4px rgba(10,53,66,.07),0 4px 14px rgba(10,53,66,.09);
+  --shadow-lg:0 6px 24px rgba(10,53,66,.13),0 16px 48px rgba(10,53,66,.10);
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:var(--light);color:var(--body);overflow-x:hidden;}
+#prog{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,174,239,.15);z-index:200;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00D4FF);width:0%;transition:width .4s;}
+
+/* ── HERO ── */
+#hero{background:var(--navy);padding:0;position:relative;overflow:hidden;min-height:280px;display:flex;flex-direction:column;justify-content:flex-end;}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,174,239,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,.05) 1px,transparent 1px);background-size:48px 48px;}
+.hero-glow{position:absolute;top:-100px;right:-60px;width:440px;height:440px;border-radius:50%;background:radial-gradient(circle,rgba(0,174,239,.16) 0%,transparent 70%);pointer-events:none;}
+.hero-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky);}
+.hero-inner{max-width:940px;margin:0 auto;padding:52px 28px 38px;position:relative;z-index:1;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.28);border-radius:20px;padding:5px 14px;font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.22em;margin-bottom:16px;}
+.hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--sky);display:inline-block;}
+.hero-title{font-family:var(--serif);color:#fff;font-size:clamp(26px,4vw,46px);line-height:1.08;margin-bottom:10px;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.55);font-size:13.5px;line-height:1.7;max-width:520px;margin-bottom:20px;}
+.hero-stats{display:flex;flex-wrap:wrap;gap:10px;}
+.hero-stat{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px 18px;text-align:center;}
+.hero-stat-n{font-family:var(--serif);font-size:22px;color:var(--sky);font-weight:700;line-height:1;}
+.hero-stat-l{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.1em;margin-top:3px;}
+
+/* ── LAYOUT ── */
+.section{padding:36px 28px;}
+.inner{max-width:940px;margin:0 auto;}
+.s-label{font-size:9px;letter-spacing:.26em;font-weight:700;color:var(--sky);margin-bottom:8px;}
+.s-title{font-family:var(--serif);font-size:24px;color:var(--navy);line-height:1.2;margin-bottom:4px;}
+.s-bar{width:36px;height:3px;background:var(--sky);border-radius:2px;margin-bottom:20px;}
+.sep{height:1px;background:var(--line);max-width:940px;margin:0 auto;}
+
+/* ── FLAG CARD ── */
+.flag-card{
+  background:#fff;border-radius:12px;padding:16px 18px;
+  border:1.5px solid #F5D0CD;border-left:4px solid var(--red);
+  box-shadow:var(--shadow);display:flex;gap:12px;align-items:flex-start;
+}
+.flag-card-icon{font-size:16px;flex-shrink:0;margin-top:2px;}
+.flag-card-body{}
+.flag-card-title{font-size:11px;font-weight:700;color:var(--red);margin-bottom:4px;letter-spacing:.06em;}
+.flag-card-text{font-size:12.5px;color:var(--body);line-height:1.6;}
+.flag-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:560px){.flag-grid{grid-template-columns:1fr;}}
+
+/* ── PAY SECTION CARDS ── */
+.pay-section{background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:0;}
+.pay-section-header{
+  background:var(--navy);padding:16px 22px;
+  display:flex;align-items:center;gap:12px;
+}
+.psh-num{
+  width:32px;height:32px;border-radius:9px;
+  background:rgba(0,174,239,.15);display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;color:var(--sky);flex-shrink:0;
+}
+.psh-title{font-size:14px;font-weight:700;color:#fff;}
+.psh-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px;}
+.pay-section-body{padding:20px 22px;}
+
+/* ── BONUS GRID ── */
+.bonus-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+@media(max-width:700px){.bonus-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:420px){.bonus-grid{grid-template-columns:1fr;}}
+.bonus-card{
+  border-radius:12px;padding:18px 16px;text-align:center;
+  border:1.5px solid var(--line);background:var(--sky-bg);
+  position:relative;overflow:hidden;
+}
+.bonus-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gold);}
+.bonus-emoji{font-size:22px;margin-bottom:8px;}
+.bonus-name{font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px;line-height:1.3;}
+.bonus-threshold{font-size:10px;color:var(--muted);line-height:1.4;margin-bottom:10px;}
+.bonus-amount{
+  font-family:var(--serif);font-size:28px;font-weight:700;color:var(--gold);
+  display:block;
+}
+.bonus-pw{font-size:9px;color:var(--muted);margin-top:1px;}
+
+.bonus-max{
+  background:linear-gradient(135deg,var(--navy),var(--navy2));
+  border-radius:12px;padding:18px 22px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+  border:1.5px solid rgba(212,148,10,.25);
+  margin-top:12px;
+}
+.bonus-max-label{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.1em;margin-bottom:3px;}
+.bonus-max-sub{font-size:12px;color:rgba(255,255,255,.45);}
+.bonus-max-num{font-family:var(--serif);font-size:44px;font-weight:700;color:var(--gold);line-height:1;}
+.bonus-max-pw{font-size:10px;color:rgba(255,255,255,.3);text-align:right;}
+
+/* ── PAY CYCLE ── */
+.pay-cycle-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+@media(max-width:560px){.pay-cycle-row{grid-template-columns:1fr;}}
+.pay-cycle-card{
+  background:var(--sky-bg);border-radius:12px;padding:16px 16px;
+  border:1.5px solid var(--border);text-align:center;
+}
+.pcc-icon{font-size:22px;margin-bottom:8px;}
+.pcc-label{font-size:9px;font-weight:700;letter-spacing:.16em;color:var(--sky);margin-bottom:6px;}
+.pcc-value{font-size:15px;font-weight:700;color:var(--navy);line-height:1.3;}
+.pcc-value.flag{color:var(--red);font-size:12px;font-style:italic;}
+
+/* ── BONUS CALCULATOR ── */
+.calc-wrap{background:var(--navy);border-radius:16px;padding:28px 26px;border:1.5px solid rgba(212,148,10,.2);}
+.calc-title{font-family:var(--serif);font-size:22px;color:#fff;margin-bottom:4px;}
+.calc-title em{color:var(--gold);}
+.calc-sub{font-size:12.5px;color:rgba(255,255,255,.45);margin-bottom:22px;line-height:1.5;}
+
+.calc-checks{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.calc-check{
+  display:flex;align-items:center;gap:14px;
+  background:rgba(255,255,255,.05);border-radius:10px;padding:14px 16px;
+  border:1px solid rgba(255,255,255,.07);cursor:pointer;
+  transition:all .18s;user-select:none;
+}
+.calc-check:hover{background:rgba(255,255,255,.08);border-color:rgba(212,148,10,.3);}
+.calc-check.earned{background:rgba(212,148,10,.1);border-color:rgba(212,148,10,.3);}
+.calc-check-box{
+  width:24px;height:24px;border-radius:6px;border:2px solid rgba(255,255,255,.2);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:13px;transition:all .18s;
+}
+.calc-check.earned .calc-check-box{background:var(--gold);border-color:var(--gold);}
+.calc-check-name{font-size:13px;font-weight:600;color:rgba(255,255,255,.8);flex:1;line-height:1.3;}
+.calc-check.earned .calc-check-name{color:#fff;}
+.calc-check-req{font-size:10.5px;color:rgba(255,255,255,.35);margin-top:2px;}
+.calc-check-amt{font-family:var(--serif);font-size:18px;color:rgba(255,255,255,.2);font-weight:700;flex-shrink:0;transition:color .18s;}
+.calc-check.earned .calc-check-amt{color:var(--gold);}
+
+.calc-total-wrap{
+  background:rgba(212,148,10,.12);border:1.5px solid rgba(212,148,10,.3);
+  border-radius:12px;padding:18px 22px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+}
+.calc-total-label{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.1em;}
+.calc-total-sub{font-size:11.5px;color:rgba(255,255,255,.4);margin-top:3px;}
+.calc-total-amount{font-family:var(--serif);font-size:48px;font-weight:700;color:var(--gold);line-height:1;}
+.calc-total-pw{font-size:10px;color:rgba(255,255,255,.3);text-align:right;}
+
+/* ── NARRATION ── */
+.narration{background:var(--navy);border-radius:14px;padding:22px 26px;display:flex;gap:14px;align-items:flex-start;border-left:4px solid var(--sky);}
+.narration-q{font-size:26px;color:var(--sky);line-height:1;flex-shrink:0;margin-top:-4px;}
+.narration-text{font-size:14px;color:rgba(255,255,255,.75);line-height:1.75;font-style:italic;}
+.narration-text strong{color:#fff;font-style:normal;}
+</style>
+</head>
+<body>
+<div id="prog"><div id="prog-fill"></div></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span></span>ALPHA HIPPO · DAY 2</div>
+    <h1 class="hero-title">Commission Structure<br><em>& Pay</em></h1>
+    <p class="hero-sub">Base pay, commission, weekly bonuses, and sprint challenges — everything in one place. Know your numbers before you dial.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-n">$20</div><div class="hero-stat-l">BASE PAY / HR</div></div>
+      <div class="hero-stat"><div class="hero-stat-n">$500</div><div class="hero-stat-l">MAX COMMISSION / SALE</div></div>
+      <div class="hero-stat"><div class="hero-stat-n">$260</div><div class="hero-stat-l">MAX DAILY EXTRAS</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 1 — BASE PAY -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">SECTION 1</div>
+    <div class="s-title">Base Pay</div>
+    <div class="s-bar"></div>
+    <div class="pay-section">
+      <div class="pay-section-header">
+        <div class="psh-num">1</div>
+        <div>
+          <div class="psh-title">Base Pay</div>
+          <div class="psh-sub">Your guaranteed weekly income before bonuses</div>
+        </div>
+      </div>
+      <div class="pay-section-body">
+        <div class="pay-cycle-row" style="margin-bottom:16px;">
+          <div class="pay-cycle-card">
+            <div class="pcc-icon">💵</div>
+            <div class="pcc-label">HOURLY RATE</div>
+            <div class="pcc-value">$20 / hour</div>
+          </div>
+          <div class="pay-cycle-card">
+            <div class="pcc-icon">⏱️</div>
+            <div class="pcc-label">WHAT COUNTS</div>
+            <div class="pcc-value">Active phone time + 1hr daily meetings/training</div>
+          </div>
+          <div class="pay-cycle-card">
+            <div class="pcc-icon">📊</div>
+            <div class="pcc-label">TRACKED VIA</div>
+            <div class="pcc-value">Insightful and/or Dialer.io</div>
+          </div>
+        </div>
+        <div style="background:var(--sky-bg);border:1px solid var(--border);border-left:3px solid var(--sky);border-radius:0 10px 10px 0;padding:13px 16px;font-size:13px;color:var(--navy);line-height:1.65;">
+          Base pay is the <strong>same for all setters</strong> on Alpha Hippo. Paid weekly — preferably to a <strong>Wise or Revolut account</strong> with local AU details. Luke will help you set this up if needed.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- SECTION 2 — COMMISSION -->
+<div class="section" style="background:#fff;">
+  <div class="inner">
+    <div class="s-label">SECTION 2</div>
+    <div class="s-title">Commission</div>
+    <div class="s-bar"></div>
+    <div class="pay-section">
+      <div class="pay-section-header">
+        <div class="psh-num">2</div>
+        <div>
+          <div class="psh-title">Commission Structure</div>
+          <div class="psh-sub">Paid per sale — escalating scale, paid weekly a week in arrears</div>
+        </div>
+      </div>
+      <div class="pay-section-body">
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:16px;">
+          <div style="background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:14px 10px;text-align:center;border-top:3px solid var(--sky);">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">1ST SALE</div>
+            <div style="font-size:22px;font-weight:800;color:var(--sky);font-family:var(--serif);">$150</div>
+          </div>
+          <div style="background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:14px 10px;text-align:center;border-top:3px solid var(--sky);">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">2ND SALE</div>
+            <div style="font-size:22px;font-weight:800;color:var(--sky);font-family:var(--serif);">$250</div>
+          </div>
+          <div style="background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:14px 10px;text-align:center;border-top:3px solid var(--sky);">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">3RD SALE</div>
+            <div style="font-size:22px;font-weight:800;color:var(--sky);font-family:var(--serif);">$350</div>
+          </div>
+          <div style="background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:14px 10px;text-align:center;border-top:3px solid var(--sky2);">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">4TH SALE</div>
+            <div style="font-size:22px;font-weight:800;color:var(--sky2);font-family:var(--serif);">$450</div>
+          </div>
+          <div style="background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:14px 10px;text-align:center;border-top:3px solid var(--navy);">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">5TH SALE</div>
+            <div style="font-size:22px;font-weight:800;color:var(--navy);font-family:var(--serif);">$500</div>
+          </div>
+          <div style="background:var(--navy);border:1.5px solid var(--navy);border-radius:10px;padding:14px 10px;text-align:center;">
+            <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:4px;">6TH+</div>
+            <div style="font-size:22px;font-weight:800;color:#fff;font-family:var(--serif);">$500</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.5);margin-top:2px;">each</div>
+          </div>
+        </div>
+        <div style="background:var(--sky-bg);border:1px solid var(--border);border-left:3px solid var(--sky);border-radius:0 10px 10px 0;padding:13px 16px;font-size:13px;color:var(--navy);line-height:1.65;">
+          Commission is paid <strong>weekly, a week in arrears</strong> — on Fridays for the previous week's sales (Monday to Sunday). Your Google Sheet from accounts will be updated Wednesday/Thursday before pay day showing all hours, bonuses, and commissions.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- SECTION 3 — BONUS STRUCTURE -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">SECTION 3</div>
+    <div class="s-title">Bonus Structure</div>
+    <div class="s-bar"></div>
+    <div class="pay-section">
+      <div class="pay-section-header">
+        <div class="psh-num">3</div>
+        <div>
+          <div class="psh-title">Weekly Bonus Opportunities</div>
+          <div class="psh-sub">4 bonuses · $50 each · up to $200 per week</div>
+        </div>
+      </div>
+      <div class="pay-section-body">
+        <div class="bonus-grid">
+          <div class="bonus-card">
+            <div class="bonus-emoji">📞</div>
+            <div class="bonus-name">Call Efficiency</div>
+            <div class="bonus-threshold">50%+ weekly average<br>No additional conditions</div>
+            <span class="bonus-amount">$50</span>
+            <div class="bonus-pw">per week</div>
+          </div>
+          <div class="bonus-card">
+            <div class="bonus-emoji">🤝</div>
+            <div class="bonus-name">Pick-Ups</div>
+            <div class="bonus-threshold">125+ for the week<br>Min. 15% close rate required</div>
+            <span class="bonus-amount">$50</span>
+            <div class="bonus-pw">per week</div>
+          </div>
+          <div class="bonus-card">
+            <div class="bonus-emoji">🪑</div>
+            <div class="bonus-name">Net Sit Rate</div>
+            <div class="bonus-threshold">50%+ weekly average<br>Min. 15 apps in calendar</div>
+            <span class="bonus-amount">$50</span>
+            <div class="bonus-pw">per week</div>
+          </div>
+          <div class="bonus-card">
+            <div class="bonus-emoji">🎯</div>
+            <div class="bonus-name">Pick-Up to Close</div>
+            <div class="bonus-threshold">33%+ weekly average<br>Min. 15 bookings for the week</div>
+            <span class="bonus-amount">$50</span>
+            <div class="bonus-pw">per week</div>
+          </div>
+        </div>
+        <div class="bonus-max">
+          <div>
+            <div class="bonus-max-label">MAXIMUM WEEKLY BONUS</div>
+            <div class="bonus-max-sub">Hit all 4 — earn all 4. Every week, from week one.</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="bonus-max-num">$200</div>
+            <div class="bonus-max-pw">per week</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- SECTION 4 — PAY CYCLE -->
+<div class="section" style="background:#fff;">
+  <div class="inner">
+    <div class="s-label">SECTION 4</div>
+    <div class="s-title">Pay Cycle</div>
+    <div class="s-bar"></div>
+    <div class="pay-section">
+      <div class="pay-section-header">
+        <div class="psh-num">4</div>
+        <div>
+          <div class="psh-title">When & How You Get Paid</div>
+          <div class="psh-sub">Pay frequency, pay day, and what to do if something looks wrong</div>
+        </div>
+      </div>
+      <div class="pay-section-body">
+        <div class="pay-cycle-row" style="margin-bottom:16px;">
+          <div class="pay-cycle-card">
+            <div class="pcc-icon">📅</div>
+            <div class="pcc-label">PAY FREQUENCY</div>
+            <div class="pcc-value">Weekly</div>
+          </div>
+          <div class="pay-cycle-card">
+            <div class="pcc-icon">💸</div>
+            <div class="pcc-label">PAY DAY</div>
+            <div class="pcc-value">Friday — previous week Mon–Sun</div>
+          </div>
+          <div class="pay-cycle-card">
+            <div class="pcc-icon">❓</div>
+            <div class="pcc-label">PAY QUERIES</div>
+            <div class="pcc-value">Go straight to your TL</div>
+          </div>
+        </div>
+        <div style="background:var(--sky-bg);border:1px solid var(--border);border-left:3px solid var(--sky);border-radius:0 10px 10px 0;padding:13px 16px;font-size:13px;color:var(--navy);line-height:1.65;">
+          You'll receive a <strong>Google Sheet from accounts</strong> updated Wednesday/Thursday before pay day — showing all hours worked, sprint challenge bonuses, and sales commissions. If anything looks wrong, <strong>go straight to your TL first.</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- SECTION 5 — SPRINT CHALLENGES -->
+<div class="section" style="background:#fff;">
+  <div class="inner">
+    <div class="s-label">SECTION 5</div>
+    <div class="s-title">Sprint Challenges</div>
+    <div class="s-bar"></div>
+    <div class="pay-section">
+      <div class="pay-section-header">
+        <div class="psh-num">5</div>
+        <div>
+          <div class="psh-title">Daily Sprint Challenges</div>
+          <div class="psh-sub">Three challenges every day — $20 each, verified by Luke</div>
+        </div>
+      </div>
+      <div class="pay-section-body">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;">
+          <div style="background:var(--navy);border-radius:12px;padding:16px 14px;">
+            <div style="font-size:9px;font-weight:700;letter-spacing:.18em;color:var(--sky);margin-bottom:6px;">SPRINT 1</div>
+            <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">7:50 – 10:00am</div>
+            <div style="font-size:11.5px;color:rgba(255,255,255,.6);line-height:1.5;">Challenge announced at check-in. Could be dials, efficiency, or call scoring.</div>
+            <div style="margin-top:10px;font-size:18px;font-weight:800;color:var(--sky);">$20</div>
+          </div>
+          <div style="background:var(--navy);border-radius:12px;padding:16px 14px;">
+            <div style="font-size:9px;font-weight:700;letter-spacing:.18em;color:var(--sky);margin-bottom:6px;">SPRINT 2</div>
+            <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">10:30am – 12:30pm</div>
+            <div style="font-size:11.5px;color:rgba(255,255,255,.6);line-height:1.5;">New challenge, different metric. Announced at the Sprint 1 review.</div>
+            <div style="margin-top:10px;font-size:18px;font-weight:800;color:var(--sky);">$20</div>
+          </div>
+          <div style="background:var(--navy);border-radius:12px;padding:16px 14px;">
+            <div style="font-size:9px;font-weight:700;letter-spacing:.18em;color:var(--sky);margin-bottom:6px;">SPRINT 3</div>
+            <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">1:15 – 3:15pm</div>
+            <div style="font-size:11.5px;color:rgba(255,255,255,.6);line-height:1.5;">Final challenge — often bookings or call score. The big push to close the day strong.</div>
+            <div style="margin-top:10px;font-size:18px;font-weight:800;color:var(--sky);">$20</div>
+          </div>
+        </div>
+        <div style="background:var(--gold-lt);border:1.5px solid rgba(212,148,10,.3);border-radius:12px;padding:16px 18px;margin-bottom:12px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--gold);margin-bottom:6px;">🌟 BONUS CHALLENGES</div>
+          <div style="font-size:13px;color:var(--navy);line-height:1.65;">Luke drops bonus challenges mid-week — team targets, individual milestones, or special events. Payouts are larger ($50–$60+) and can be split. <strong>Log your win in the tracker the same day — not Friday. If your name isn't in the log, you don't get paid.</strong></div>
+        </div>
+        <div style="background:var(--sky-bg);border:1px solid var(--border);border-left:3px solid var(--sky);border-radius:0 10px 10px 0;padding:13px 16px;font-size:13px;color:var(--navy);line-height:1.65;">
+          Sprint challenge winnings are included in your weekly Google Sheet — verified by Luke against the dashboard before pay day.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- SECTION 6 — CALCULATOR -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">SECTION 6 — INTERACTIVE</div>
+    <div class="s-title">Bonus Calculator</div>
+    <div class="s-bar"></div>
+    <div class="calc-wrap">
+      <div class="calc-title">What Could Your Week <em>Look Like?</em></div>
+      <div class="calc-sub">Tick the bonuses you hit. Your weekly total updates live. Up to $200 on top of your base — every single week.</div>
+      <div class="calc-checks">
+        <div class="calc-check" onclick="toggleBonus(this,50)">
+          <div class="calc-check-box"></div>
+          <div style="flex:1;">
+            <div class="calc-check-name">📞 Call Efficiency — 50%+ weekly average</div>
+            <div class="calc-check-req">No additional conditions required</div>
+          </div>
+          <div class="calc-check-amt">+$50</div>
+        </div>
+        <div class="calc-check" onclick="toggleBonus(this,50)">
+          <div class="calc-check-box"></div>
+          <div style="flex:1;">
+            <div class="calc-check-name">🤝 Pick-Ups — 125+ for the week</div>
+            <div class="calc-check-req">Min. 15% close rate required to qualify</div>
+          </div>
+          <div class="calc-check-amt">+$50</div>
+        </div>
+        <div class="calc-check" onclick="toggleBonus(this,50)">
+          <div class="calc-check-box"></div>
+          <div style="flex:1;">
+            <div class="calc-check-name">🪑 Net Sit Rate — 50%+ weekly average</div>
+            <div class="calc-check-req">Min. 15 appointments in calendar required</div>
+          </div>
+          <div class="calc-check-amt">+$50</div>
+        </div>
+        <div class="calc-check" onclick="toggleBonus(this,50)">
+          <div class="calc-check-box"></div>
+          <div style="flex:1;">
+            <div class="calc-check-name">🎯 Pick-Up to Close — 33%+ weekly average</div>
+            <div class="calc-check-req">Min. 15 bookings for the week required</div>
+          </div>
+          <div class="calc-check-amt">+$50</div>
+        </div>
+      </div>
+      <div class="calc-total-wrap">
+        <div>
+          <div class="calc-total-label">WEEKLY BONUS TOTAL</div>
+          <div class="calc-total-sub">On top of your base pay and commission</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="calc-total-amount" id="calc-total">$0</div>
+          <div class="calc-total-pw">this week</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- NARRATION -->
+<div class="section" style="background:#fff;">
+  <div class="inner">
+    <div class="narration">
+      <div class="narration-q">"</div>
+      <div class="narration-text">The bonus structure is designed so that doing your job well pays more. It's not random — <strong>every $50 is tied to a specific behaviour.</strong> The calculator makes it concrete: this week, at this level, you'd earn this. Know your numbers. Chase them deliberately.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('scroll',()=>{
+  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('prog-fill').style.width=Math.min(p,100)+'%';
+});
+
+let bonusTotal=0;
+function toggleBonus(el,amt){
+  if(el.classList.contains('earned')){
+    el.classList.remove('earned');
+    el.querySelector('.calc-check-box').textContent='';
+    bonusTotal-=amt;
+  } else {
+    el.classList.add('earned');
+    el.querySelector('.calc-check-box').textContent='✓';
+    bonusTotal+=amt;
+  }
+  document.getElementById('calc-total').textContent='$'+bonusTotal;
+}
+</script>
+</body>
+</html>
