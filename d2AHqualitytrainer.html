@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alpha Hippo — Quality Standards Trainer</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;--sky:#00AEEF;--sky2:#0090C4;
+  --white:#fff;--light:#F4F8FB;--muted:#6B8A9A;--body:#1A2E3B;
+  --green:#0B7A4E;--green-lt:#E3F5EC;
+  --red:#C0392B;--red-lt:#FDECEA;
+  --gold:#D4940A;--gold-lt:#FEF4E0;
+  --card:#F0F4F7;--line:#E0EAEE;
+  --f:'DM Sans',sans-serif;--fs:'DM Serif Display',serif;
+}
+html,body{min-height:100%;font-family:var(--f);background:var(--navy2);color:var(--body);overflow-x:hidden;}
+#app{min-height:100vh;display:flex;flex-direction:column;align-items:center;}
+
+/* HEADER */
+.game-header{width:100%;background:var(--navy);border-bottom:2px solid var(--sky);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo-text{font-size:17px;font-weight:800;color:var(--white);}
+.logo-text span{color:var(--sky);}
+.logo-sub{font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);}
+.phase-pill{background:rgba(0,174,239,.15);border:1px solid rgba(0,174,239,.3);border-radius:20px;padding:5px 14px;font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.1em;text-transform:uppercase;}
+.score-val{font-family:var(--fs);font-size:22px;color:var(--white);}
+.score-label{font-size:9px;text-transform:uppercase;color:var(--muted);letter-spacing:.1em;text-align:right;}
+
+/* SCREENS */
+.screen{width:100%;max-width:860px;padding:28px 20px 40px;display:none;}
+.screen.active{display:block;}
+
+/* INTRO */
+.intro-hero{background:var(--navy);border-radius:20px;padding:40px 36px;text-align:center;margin-bottom:20px;position:relative;overflow:hidden;}
+.intro-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 20%,rgba(0,174,239,.1) 0%,transparent 60%);pointer-events:none;}
+.intro-eyebrow{font-size:10px;font-weight:700;letter-spacing:.22em;color:var(--sky);text-transform:uppercase;margin-bottom:10px;}
+.intro-title{font-family:var(--fs);font-size:40px;color:var(--white);line-height:1.1;margin-bottom:10px;}
+.intro-title em{color:var(--sky);font-style:italic;}
+.intro-sub{font-size:14px;color:rgba(255,255,255,.5);line-height:1.7;max-width:500px;margin:0 auto 24px;}
+.intro-phases{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px;}
+.phase-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px 12px;text-align:center;}
+.phase-num{font-family:var(--fs);font-size:26px;color:var(--sky);margin-bottom:4px;}
+.phase-name{font-size:11px;font-weight:700;color:var(--white);margin-bottom:3px;}
+.phase-desc{font-size:10.5px;color:rgba(255,255,255,.38);line-height:1.5;}
+.btn-start{background:var(--sky);color:var(--white);border:none;border-radius:12px;padding:15px 38px;font-family:var(--f);font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-start:hover{background:var(--sky2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,174,239,.3);}
+
+/* SCENARIO CARD */
+.scenario-card{background:var(--white);border-radius:14px;padding:20px 22px;margin-bottom:18px;border:1.5px solid var(--line);}
+.sc-eyebrow{font-size:9px;font-weight:700;letter-spacing:.18em;color:var(--sky);text-transform:uppercase;margin-bottom:5px;}
+.sc-name{font-size:20px;font-weight:800;color:var(--navy);margin-bottom:14px;}
+.sc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.sc-item{background:var(--card);border-radius:8px;padding:9px 12px;}
+.sc-item-label{font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:2px;}
+.sc-item-val{font-size:12.5px;font-weight:600;color:var(--navy);}
+
+/* PHASE HEADER */
+.phase-header{text-align:center;margin-bottom:22px;}
+.phase-eyebrow{font-size:9.5px;font-weight:700;letter-spacing:.2em;color:var(--sky);text-transform:uppercase;margin-bottom:5px;}
+.phase-title{font-family:var(--fs);font-size:30px;color:var(--white);}
+.phase-title em{color:var(--sky);font-style:italic;}
+.phase-sub{font-size:13px;color:rgba(255,255,255,.4);margin-top:5px;}
+
+/* PROGRESS */
+.progress-wrap{background:rgba(255,255,255,.08);border-radius:20px;height:5px;margin-bottom:20px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00D4FF);border-radius:20px;transition:width .4s;}
+
+/* CRITERIA */
+.criteria-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.criterion{background:var(--white);border:2px solid var(--line);border-radius:14px;padding:15px 16px;transition:all .2s;position:relative;}
+.criterion.correct{border-color:var(--green);background:var(--green-lt);}
+.criterion.wrong{border-color:var(--red);background:var(--red-lt);}
+.crit-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
+.crit-icon{font-size:18px;flex-shrink:0;margin-top:2px;}
+.crit-title{font-size:12.5px;font-weight:700;color:var(--navy);}
+.crit-sub{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:10px;}
+.crit-verdict{position:absolute;top:10px;right:12px;font-size:16px;}
+.crit-btns{display:flex;gap:7px;}
+.btn-yes,.btn-no{flex:1;border:none;border-radius:8px;padding:7px;font-family:var(--f);font-size:11.5px;font-weight:700;cursor:pointer;transition:all .18s;}
+.btn-yes{background:var(--green-lt);color:var(--green);}
+.btn-yes:hover:not(:disabled){background:var(--green);color:var(--white);}
+.btn-no{background:var(--red-lt);color:var(--red);}
+.btn-no:hover:not(:disabled){background:var(--red);color:var(--white);}
+.btn-yes:disabled,.btn-no:disabled{opacity:.4;cursor:not-allowed;}
+
+/* BIG 5 */
+.b5-list{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;}
+.b5-item{background:var(--white);border:2px solid var(--line);border-radius:14px;padding:15px 18px;transition:all .2s;}
+.b5-item.ticked{border-color:var(--green);background:var(--green-lt);}
+.b5-item.missed{border-color:var(--red);background:var(--red-lt);}
+.b5-top{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
+.b5-num{width:30px;height:30px;border-radius:50%;background:var(--navy);color:var(--white);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.b5-item.ticked .b5-num{background:var(--green);}
+.b5-item.missed .b5-num{background:var(--red);}
+.b5-title{font-size:13.5px;font-weight:700;color:var(--navy);}
+.b5-result{margin-left:auto;font-size:18px;}
+.b5-body{font-size:11.5px;color:var(--muted);margin:4px 0 10px 42px;line-height:1.5;}
+.b5-btns{display:flex;gap:7px;margin-left:42px;}
+.btn-tick,.btn-miss{padding:7px 16px;border:none;border-radius:8px;font-family:var(--f);font-size:11.5px;font-weight:700;cursor:pointer;transition:all .18s;}
+.btn-tick{background:var(--green-lt);color:var(--green);}
+.btn-tick:hover:not(:disabled){background:var(--green);color:var(--white);}
+.btn-miss{background:var(--red-lt);color:var(--red);}
+.btn-miss:hover:not(:disabled){background:var(--red);color:var(--white);}
+.btn-tick:disabled,.btn-miss:disabled{opacity:.4;cursor:not-allowed;}
+.b5-feedback{font-size:11.5px;margin:7px 0 0 42px;line-height:1.5;display:none;}
+
+/* SCORING */
+.scoring-pool{background:var(--white);border-radius:14px;padding:16px;margin-bottom:14px;border:1.5px solid var(--line);}
+.pool-label{font-size:9px;font-weight:700;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+.pool-items{display:flex;flex-wrap:wrap;gap:7px;}
+.drag-item{background:var(--card);border:1.5px solid var(--line);border-radius:8px;padding:7px 13px;font-size:11.5px;font-weight:600;color:var(--navy);cursor:grab;transition:all .18s;user-select:none;}
+.drag-item:hover{border-color:var(--sky);background:var(--sky);color:var(--white);}
+.drag-item.placed{opacity:.35;cursor:default;pointer-events:none;}
+.drag-item.selected{box-shadow:0 0 0 3px var(--sky);border-color:var(--sky);}
+.tiers-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
+.tier-drop{background:var(--white);border:2px dashed var(--line);border-radius:14px;padding:13px;min-height:100px;transition:all .2s;cursor:pointer;}
+.tier-drop.drag-over{border-color:var(--sky);background:rgba(0,174,239,.04);}
+.tier-drop.tap-ready{border-color:var(--sky);border-style:solid;}
+.tier-label{font-size:8.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:3px;}
+.tier-1 .tier-label{color:var(--navy);}
+.tier-2 .tier-label{color:var(--sky2);}
+.tier-3 .tier-label{color:var(--muted);}
+.tier-pts{font-size:10.5px;color:var(--muted);margin-bottom:8px;}
+.tier-items{display:flex;flex-wrap:wrap;gap:5px;min-height:32px;}
+.tier-chip{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:4px 9px;font-size:10.5px;font-weight:600;color:var(--navy);cursor:pointer;transition:all .15s;}
+.tier-chip:hover{background:var(--red-lt);border-color:var(--red);color:var(--red);}
+
+/* CONTINUE BTN */
+.btn-continue{background:var(--sky);color:var(--white);border:none;border-radius:12px;padding:13px 34px;font-family:var(--f);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:block;margin:0 auto;}
+.btn-continue:hover:not(:disabled){background:var(--sky2);transform:translateY(-2px);}
+.btn-continue:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+
+/* RESULTS */
+.results-card{background:var(--white);border-radius:20px;padding:32px 28px;text-align:center;margin-bottom:18px;}
+.result-badge{display:inline-block;padding:7px 22px;border-radius:30px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;}
+.badge-excellent{background:var(--green-lt);color:var(--green);}
+.badge-good{background:rgba(0,174,239,.1);color:var(--sky2);}
+.badge-min{background:var(--gold-lt);color:var(--gold);}
+.badge-below{background:var(--red-lt);color:var(--red);}
+.result-score{font-family:var(--fs);font-size:68px;color:var(--navy);line-height:1;}
+.result-denom{font-family:var(--fs);font-size:30px;color:var(--muted);}
+.result-label{font-size:12.5px;color:var(--muted);margin-top:5px;margin-bottom:20px;}
+.result-breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.rb-card{background:var(--card);border-radius:12px;padding:14px;}
+.rb-num{font-family:var(--fs);font-size:26px;color:var(--navy);}
+.rb-label{font-size:10.5px;color:var(--muted);margin-top:2px;}
+.result-msg{font-size:14px;color:var(--body);line-height:1.7;font-style:italic;margin-bottom:22px;}
+.btn-retry{background:var(--navy);color:var(--white);border:none;border-radius:12px;padding:13px 34px;font-family:var(--f);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:block;margin:0 auto;}
+.btn-retry:hover{background:var(--navy2);transform:translateY(-2px);}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--navy);color:var(--white);border-radius:10px;padding:11px 22px;font-size:13px;font-weight:600;opacity:0;transition:all .28s;z-index:999;pointer-events:none;white-space:nowrap;border-left:4px solid var(--sky);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.ok{border-left-color:var(--green);}
+.toast.err{border-left-color:var(--red);}
+
+/* CONFETTI */
+.piece{position:fixed;pointer-events:none;z-index:9999;border-radius:2px;animation:fall linear forwards;}
+@keyframes fall{0%{transform:translateY(-10px) rotate(0deg);opacity:1;}100%{transform:translateY(105vh) rotate(720deg);opacity:0;}}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+@keyframes ping{0%{transform:scale(1);}50%{transform:scale(1.07);}100%{transform:scale(1);}}
+.ping{animation:ping .22s ease;}
+</style>
+</head>
+<body>
+<div id="app">
+
+<header class="game-header">
+  <div>
+    <div class="logo-text"><span>RE</span>SINC</div>
+    <div class="logo-sub">Alpha Hippo</div>
+  </div>
+  <div class="phase-pill" id="phase-pill">Quality Trainer</div>
+  <div style="text-align:right">
+    <div class="score-val" id="score-display">0</div>
+    <div class="score-label">points</div>
+  </div>
+</header>
+
+<!-- INTRO -->
+<div class="screen active" id="screen-intro">
+  <div class="intro-hero">
+    <div class="intro-eyebrow">Alpha Hippo · Quality Standards</div>
+    <h1 class="intro-title">Ready to run<br>a <em>real call?</em></h1>
+    <p class="intro-sub">You'll get a customer, qualify the lead, check the Big 5, and score the call. Three phases — each one different. Let's see what you've got.</p>
+    <div class="intro-phases">
+      <div class="phase-card">
+        <div class="phase-num">1</div>
+        <div class="phase-name">Qualify</div>
+        <div class="phase-desc">Check the 9 criteria. Does this lead go in the calendar?</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">2</div>
+        <div class="phase-name">Big 5</div>
+        <div class="phase-desc">The call happened. Did you hit every non-negotiable?</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">3</div>
+        <div class="phase-name">Score</div>
+        <div class="phase-desc">Place each call moment into the right scoring tier.</div>
+      </div>
+    </div>
+    <button class="btn-start" id="btn-start">Let's go 🎯</button>
+  </div>
+</div>
+
+<!-- PHASE 1 -->
+<div class="screen" id="screen-qualify">
+  <div class="phase-header">
+    <div class="phase-eyebrow">Phase 1 of 3</div>
+    <h2 class="phase-title">Qualify the <em>Lead</em></h2>
+    <p class="phase-sub">Read the customer. Does each criterion pass or fail?</p>
+  </div>
+  <div class="scenario-card" id="qualify-scenario"></div>
+  <div class="progress-wrap"><div class="progress-fill" id="qual-prog" style="width:0%"></div></div>
+  <div class="criteria-grid" id="criteria-grid"></div>
+  <button class="btn-continue" id="btn-phase2" disabled>Next — Big 5 →</button>
+</div>
+
+<!-- PHASE 2 -->
+<div class="screen" id="screen-big5">
+  <div class="phase-header">
+    <div class="phase-eyebrow">Phase 2 of 3</div>
+    <h2 class="phase-title">The <em>Big 5</em></h2>
+    <p class="phase-sub">The call happened. What got ticked?</p>
+  </div>
+  <div class="scenario-card" id="b5-scenario"></div>
+  <div class="progress-wrap"><div class="progress-fill" id="b5-prog" style="width:0%"></div></div>
+  <div class="b5-list" id="b5-list"></div>
+  <button class="btn-continue" id="btn-phase3" disabled>Next — Score the Call →</button>
+</div>
+
+<!-- PHASE 3 -->
+<div class="screen" id="screen-score">
+  <div class="phase-header">
+    <div class="phase-eyebrow">Phase 3 of 3</div>
+    <h2 class="phase-title">Score the <em>Call</em></h2>
+    <p class="phase-sub">Tap an item, then tap a tier to place it.</p>
+  </div>
+  <div class="scoring-pool">
+    <div class="pool-label">Tap an item to select it, then tap a tier</div>
+    <div class="pool-items" id="pool-items"></div>
+  </div>
+  <div class="tiers-row">
+    <div class="tier-drop tier-1" id="td-tier-1">
+      <div class="tier-label">Tier 1 — Deal Makers</div>
+      <div class="tier-pts">3 pts each</div>
+      <div class="tier-items" id="ti-tier-1"></div>
+    </div>
+    <div class="tier-drop tier-2" id="td-tier-2">
+      <div class="tier-label">Tier 2 — Core Conversation</div>
+      <div class="tier-pts">2 pts each</div>
+      <div class="tier-items" id="ti-tier-2"></div>
+    </div>
+    <div class="tier-drop tier-3" id="td-tier-3">
+      <div class="tier-label">Tier 3 — Supporting Points</div>
+      <div class="tier-pts">1 pt each</div>
+      <div class="tier-items" id="ti-tier-3"></div>
+    </div>
+  </div>
+  <button class="btn-continue" id="btn-results">See My Results 🏆</button>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="screen-results">
+  <div class="phase-header">
+    <div class="phase-eyebrow">Round Complete</div>
+    <h2 class="phase-title">Your <em>Results</em></h2>
+  </div>
+  <div class="results-card" id="results-card"></div>
+  <button class="btn-retry" id="btn-retry">🔄 Try Another Round</button>
+</div>
+
+</div><!-- /app -->
+<div class="toast" id="toast"></div>
+
+<script>
+const SCENARIOS = [
+  {
+    id:'sarah',
+    name:'Sarah Mitchell',
+    location:'Penrith, NSW',
+    details:{'Quarterly Bill':'$420','Property':'Owns','Household':'Couple — partner WFH','Solar':'None','Plans':'Staying 5+ years'},
+    criteria:[
+      {icon:'🏠',title:'Homeowner',sub:'Sarah confirmed she owns the property.',pass:true},
+      {icon:'👥',title:'Decision-Makers',sub:'Partner is home and will be present.',pass:true},
+      {icon:'🇦🇺',title:'Australian Resident',sub:'Lives and works in Penrith, NSW.',pass:true},
+      {icon:'📅',title:'Not Moving Within 2 Years',sub:'"We just renovated — going nowhere."',pass:true},
+      {icon:'🏗️',title:'Suitable Roof',sub:'Single-storey brick, north-facing roof.',pass:true},
+      {icon:'🌳',title:'No Major Shading',sub:'"A few small trees but nothing on the roof."',pass:true},
+      {icon:'💡',title:'Bill $300+/quarter',sub:'Latest bill was $420.',pass:true},
+      {icon:'💼',title:'Financial Capacity',sub:'Both employed full-time.',pass:true},
+      {icon:'🔋',title:'Battery / Multi-Unit Check',sub:'No existing solar. Standard house.',pass:true},
+    ],
+    big5:[
+      {n:'1',title:'Bill — Confirm + Stretch',body:'Did you confirm $420/qtr AND stretch to 5 and 10 years?',correct:true,
+       fb_correct:'✅ $420/qtr = $8,400 over 5 years. That lands.',
+       fb_wrong:'❌ Bill confirmed but not stretched. The 5-year figure is what makes it real.'},
+      {n:'2',title:'60–90 Minutes',body:'Did you tell Sarah the assessment runs 60–90 minutes?',correct:true,
+       fb_correct:'✅ Every call, every time.',
+       fb_wrong:'❌ Always state the duration. The specialist will arrive and the customer won\'t have set aside enough time.'},
+      {n:'3',title:'Double Party',body:'Did you confirm the partner will be there at the booked time?',correct:true,
+       fb_correct:'✅ Full tick — both confirmed at the agreed time.',
+       fb_wrong:'❌ You know the partner is home but didn\'t lock in attendance. Half tick at best.'},
+      {n:'4',title:'Customer Details — All Four',body:'Email ✓  Address ✓  Shade ✓  Barriers — asked?',correct:false,
+       fb_correct:'✅ All four swept. Clean booking.',
+       fb_wrong:'❌ Email, address, shade — but installation barriers skipped. Three of four = a miss.'},
+      {n:'5',title:'Next Steps — All Three',body:'Confirmation email, call day before, Zoom link?',correct:true,
+       fb_correct:'✅ Customer knows exactly what happens next.',
+       fb_wrong:'❌ Booking made but next steps not covered. No-show risk is real.'},
+    ],
+    items:[
+      {id:'i1',label:'Email confirmed as best contact',tier:'tier-1'},
+      {id:'i2',label:'Decision makers confirmed attending',tier:'tier-1'},
+      {id:'i3',label:'Bill pain established',tier:'tier-2'},
+      {id:'i4',label:'Bill stretched to 10-year figure',tier:'tier-2'},
+      {id:'i5',label:'Rebates covered',tier:'tier-2'},
+      {id:'i6',label:'Address confirmed',tier:'tier-3'},
+      {id:'i7',label:'Shade check',tier:'tier-3'},
+      {id:'i8',label:'60–90 mins stated',tier:'tier-3'},
+    ]
+  },
+  {
+    id:'dave',
+    name:'Dave & Linda Nguyen',
+    location:'Ipswich, QLD',
+    details:{'Quarterly Bill':'$680','Property':'Owns','Household':'Retired couple','Solar':'System since 2018','Plans':'Thinking of downsizing'},
+    criteria:[
+      {icon:'🏠',title:'Homeowner',sub:'Dave confirmed they own the property.',pass:true},
+      {icon:'👥',title:'Decision-Makers',sub:'Both Dave and Linda are home.',pass:true},
+      {icon:'🇦🇺',title:'Australian Resident',sub:'Born and raised in QLD.',pass:true},
+      {icon:'📅',title:'Not Moving Within 2 Years',sub:'"We\'re thinking about downsizing in the next 12 months."',pass:false},
+      {icon:'🏗️',title:'Suitable Roof',sub:'Large roof, plenty of space for panels.',pass:true},
+      {icon:'🌳',title:'No Major Shading',sub:'"The mango tree doesn\'t hit the roof at all."',pass:true},
+      {icon:'💡',title:'Bill $300+/quarter',sub:'Bill is $680 — strong lead.',pass:true},
+      {icon:'💼',title:'Financial Capacity',sub:'Retired on super, paying cash.',pass:true},
+      {icon:'🔋',title:'Battery / Multi-Unit Check',sub:'Exporting 14kWh/day avg. Battery-only opportunity.',pass:true},
+    ],
+    big5:[
+      {n:'1',title:'Bill — Confirm + Stretch',body:'$680/quarter confirmed AND stretched over time?',correct:true,
+       fb_correct:'✅ $680/qtr = $13,600 over 5 years. Powerful stretch.',
+       fb_wrong:'❌ At $680 the 5-year figure is $13,600. That\'s powerful — don\'t skip it.'},
+      {n:'2',title:'60–90 Minutes',body:'Duration stated on the call?',correct:false,
+       fb_correct:'✅ Duration stated — specialist won\'t be rushed.',
+       fb_wrong:'❌ 60 to 90 minutes must be stated every call. Even rebooks.'},
+      {n:'3',title:'Double Party',body:'Both Dave AND Linda confirmed at the agreed time?',correct:true,
+       fb_correct:'✅ Both retired, both home — clean double party.',
+       fb_wrong:'❌ Both are home but you only confirmed Dave. Linda is a title owner. Run the why-both.'},
+      {n:'4',title:'Customer Details — All Four',body:'Email, address, shade, barriers — all four?',correct:true,
+       fb_correct:'✅ All four in one clean sweep.',
+       fb_wrong:'❌ Missed installation barriers. They\'re thinking of downsizing — that\'s exactly what you needed to ask.'},
+      {n:'5',title:'Next Steps — All Three',body:'Confirmation email, call, and Zoom link covered?',correct:true,
+       fb_correct:'✅ All three. Customer is set.',
+       fb_wrong:'❌ Missing the Zoom link explanation. Small detail, big impact on sit rate.'},
+    ],
+    items:[
+      {id:'i1',label:'Email confirmed as best contact',tier:'tier-1'},
+      {id:'i2',label:'Booked within 3 days',tier:'tier-1'},
+      {id:'i3',label:'Existing solar handled correctly',tier:'tier-2'},
+      {id:'i4',label:'Bill stretched to 10-year figure',tier:'tier-2'},
+      {id:'i5',label:'Usage conversation',tier:'tier-2'},
+      {id:'i6',label:'Zoom link explained',tier:'tier-3'},
+      {id:'i7',label:'Confirmation call flagged',tier:'tier-3'},
+      {id:'i8',label:'Roof type/condition checked',tier:'tier-3'},
+    ]
+  },
+  {
+    id:'marcus',
+    name:'Marcus Webb',
+    location:'Campbelltown, NSW',
+    details:{'Quarterly Bill':'$260','Property':'Renting','Household':'Single','Solar':'None','Plans':'Happy here long-term'},
+    criteria:[
+      {icon:'🏠',title:'Homeowner',sub:'"I rent this place — been here 3 years though."',pass:false},
+      {icon:'👥',title:'Decision-Makers',sub:'Single, sole decision maker.',pass:true},
+      {icon:'🇦🇺',title:'Australian Resident',sub:'Born in Sydney, lives locally.',pass:true},
+      {icon:'📅',title:'Not Moving Within 2 Years',sub:'"I\'m not going anywhere, love this area."',pass:true},
+      {icon:'🏗️',title:'Suitable Roof',sub:'Standard house — but landlord owns it.',pass:false},
+      {icon:'🌳',title:'No Major Shading',sub:'Open roof, no shade issues.',pass:true},
+      {icon:'💡',title:'Bill $300+/quarter',sub:'Bill is $260 — below the $300 minimum.',pass:false},
+      {icon:'💼',title:'Financial Capacity',sub:'Works full time as a nurse.',pass:true},
+      {icon:'🔋',title:'Battery / Multi-Unit Check',sub:'No solar, standard rental property.',pass:false},
+    ],
+    big5:[
+      {n:'1',title:'Bill — Confirm + Stretch',body:'Bill confirmed and stretched even though it\'s below threshold?',correct:false,
+       fb_correct:'✅ You stretched — but this lead fails the $300 minimum regardless.',
+       fb_wrong:'❌ Bill wasn\'t confirmed. At $260 it\'s below the $300 minimum — this booking shouldn\'t happen.'},
+      {n:'2',title:'60–90 Minutes',body:'Duration stated?',correct:true,
+       fb_correct:'✅ Good habit — always state it, even on a difficult call.',
+       fb_wrong:'❌ Duration not stated. Build the habit on every call, even ones that shouldn\'t be booked.'},
+      {n:'3',title:'Double Party',body:'Sole decision maker confirmed on the call?',correct:true,
+       fb_correct:'✅ Sole DM confirmed — correct process.',
+       fb_wrong:'❌ You assumed Marcus was the sole DM instead of confirming. One question does it.'},
+      {n:'4',title:'Customer Details — All Four',body:'All four swept?',correct:false,
+       fb_correct:'✅ All four — even on a bad lead, the habit matters.',
+       fb_wrong:'❌ Missed installation barriers. Asking "do you own or rent?" would have stopped this booking at the criteria stage.'},
+      {n:'5',title:'Next Steps — All Three',body:'Confirmation email, call, Zoom link?',correct:false,
+       fb_correct:'✅ All three — but this booking should not have been made.',
+       fb_wrong:'❌ Next steps not covered. Build the habit regardless of how the call went.'},
+    ],
+    items:[
+      {id:'i1',label:'Strong close attempted',tier:'tier-1'},
+      {id:'i2',label:'Call over 10 minutes',tier:'tier-1'},
+      {id:'i3',label:'Assessment purpose explained',tier:'tier-2'},
+      {id:'i4',label:'PAYS financing mentioned',tier:'tier-2'},
+      {id:'i5',label:'100% Savings Guarantee',tier:'tier-2'},
+      {id:'i6',label:'25-year stretch',tier:'tier-3'},
+      {id:'i7',label:'Mortgage analogy used',tier:'tier-3'},
+      {id:'i8',label:'EV probe',tier:'tier-3'},
+    ]
+  }
+];
+
+// ── STATE ──
+var G = {
+  scenario: null,
+  score: 0,
+  qualCorrect: 0,
+  b5Correct: 0,
+  tierCorrect: 0,
+  qualDone: 0,
+  b5Done: 0,
+  selected: null,
+  placements: {}
+};
+
+// ── INIT ──
+document.getElementById('btn-start').addEventListener('click', startGame);
+document.getElementById('btn-phase2').addEventListener('click', goPhase2);
+document.getElementById('btn-phase3').addEventListener('click', goPhase3);
+document.getElementById('btn-results').addEventListener('click', showResults);
+document.getElementById('btn-retry').addEventListener('click', startGame);
+
+function startGame() {
+  var idx = Math.floor(Math.random() * SCENARIOS.length);
+  G.scenario = SCENARIOS[idx];
+  G.score = 0; G.qualCorrect = 0; G.b5Correct = 0;
+  G.tierCorrect = 0; G.qualDone = 0; G.b5Done = 0;
+  G.selected = null; G.placements = {};
+  updateScore();
+  buildPhase1();
+  show('screen-qualify');
+  document.getElementById('phase-pill').textContent = 'Phase 1 — Qualify';
+}
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ── PHASE 1 ──
+function buildPhase1() {
+  var sc = G.scenario;
+  var d = sc.details;
+  var dHtml = Object.keys(d).map(function(k){
+    return '<div class="sc-item"><div class="sc-item-label">'+k+'</div><div class="sc-item-val">'+d[k]+'</div></div>';
+  }).join('');
+  document.getElementById('qualify-scenario').innerHTML =
+    '<div class="sc-eyebrow">Your lead</div><div class="sc-name">'+sc.name+' — '+sc.location+'</div><div class="sc-grid">'+dHtml+'</div>';
+
+  var html = sc.criteria.map(function(c,i){
+    return '<div class="criterion" id="crit-'+i+'">'
+      +'<div class="crit-verdict" id="cv-'+i+'"></div>'
+      +'<div class="crit-top"><span class="crit-icon">'+c.icon+'</span>'
+      +'<span class="crit-title">'+c.title+'</span></div>'
+      +'<div class="crit-sub">'+c.sub+'</div>'
+      +'<div class="crit-btns">'
+      +'<button class="btn-yes" id="cy-'+i+'">✓ Qualifies</button>'
+      +'<button class="btn-no" id="cn-'+i+'">✗ Fails</button>'
+      +'</div></div>';
+  }).join('');
+  document.getElementById('criteria-grid').innerHTML = html;
+  document.getElementById('btn-phase2').disabled = true;
+  document.getElementById('qual-prog').style.width = '0%';
+
+  sc.criteria.forEach(function(c,i){
+    document.getElementById('cy-'+i).addEventListener('click', function(){ answerCrit(i, true); });
+    document.getElementById('cn-'+i).addEventListener('click', function(){ answerCrit(i, false); });
+  });
+}
+
+function answerCrit(i, answer) {
+  var c = G.scenario.criteria[i];
+  var el = document.getElementById('crit-'+i);
+  if (el.classList.contains('answered')) return;
+  el.classList.add('answered');
+  var correct = (answer === c.pass);
+  el.classList.add(correct ? 'correct' : 'wrong');
+  document.getElementById('cv-'+i).textContent = correct ? '✅' : '❌';
+  document.getElementById('cy-'+i).disabled = true;
+  document.getElementById('cn-'+i).disabled = true;
+  if (correct) { G.qualCorrect++; G.score += 10; updateScore(); toast(c.pass ? '✅ Correct — this one qualifies!' : '✅ Correct — this fails the criteria.', 'ok'); }
+  else { toast(c.pass ? '❌ This actually qualifies on this point.' : '❌ This lead fails here.', 'err'); }
+  G.qualDone++;
+  document.getElementById('qual-prog').style.width = Math.round(G.qualDone/G.scenario.criteria.length*100)+'%';
+  if (G.qualDone === G.scenario.criteria.length) document.getElementById('btn-phase2').disabled = false;
+}
+
+// ── PHASE 2 ──
+function goPhase2() {
+  buildPhase2();
+  show('screen-big5');
+  document.getElementById('phase-pill').textContent = 'Phase 2 — Big 5';
+}
+
+function buildPhase2() {
+  var sc = G.scenario;
+  document.getElementById('b5-scenario').innerHTML =
+    '<div class="sc-eyebrow">The call summary</div><div class="sc-name">Call with '+sc.name+'</div>'
+    +'<div class="sc-grid"><div class="sc-item"><div class="sc-item-label">Duration</div><div class="sc-item-val">14 minutes</div></div>'
+    +'<div class="sc-item"><div class="sc-item-label">Outcome</div><div class="sc-item-val">Appointment booked</div></div>'
+    +'<div class="sc-item"><div class="sc-item-label">Your task</div><div class="sc-item-val">Mark what happened</div></div></div>';
+
+  var html = sc.big5.map(function(b,i){
+    return '<div class="b5-item" id="b5i-'+i+'">'
+      +'<div class="b5-top">'
+      +'<div class="b5-num">'+b.n+'</div>'
+      +'<div class="b5-title">'+b.title+'</div>'
+      +'<div class="b5-result" id="b5r-'+i+'"></div>'
+      +'</div>'
+      +'<div class="b5-body">'+b.body+'</div>'
+      +'<div class="b5-btns">'
+      +'<button class="btn-tick" id="bt-'+i+'">✓ Ticked</button>'
+      +'<button class="btn-miss" id="bm-'+i+'">✗ Missed</button>'
+      +'</div>'
+      +'<div class="b5-feedback" id="b5fb-'+i+'"></div>'
+      +'</div>';
+  }).join('');
+  document.getElementById('b5-list').innerHTML = html;
+  document.getElementById('btn-phase3').disabled = true;
+  document.getElementById('b5-prog').style.width = '0%';
+
+  sc.big5.forEach(function(b,i){
+    document.getElementById('bt-'+i).addEventListener('click', function(){ answerB5(i, true); });
+    document.getElementById('bm-'+i).addEventListener('click', function(){ answerB5(i, false); });
+  });
+}
+
+function answerB5(i, answer) {
+  var b = G.scenario.big5[i];
+  var el = document.getElementById('b5i-'+i);
+  if (document.getElementById('bt-'+i).disabled) return;
+  document.getElementById('bt-'+i).disabled = true;
+  document.getElementById('bm-'+i).disabled = true;
+  var correct = (answer === b.correct);
+  el.classList.add(b.correct ? 'ticked' : 'missed');
+  document.getElementById('b5r-'+i).textContent = b.correct ? '✅' : '❌';
+  var fb = document.getElementById('b5fb-'+i);
+  fb.textContent = answer ? b.fb_correct : b.fb_wrong;
+  fb.style.display = 'block';
+  fb.style.color = b.correct ? 'var(--green)' : 'var(--red)';
+  if (correct) { G.b5Correct++; G.score += 20; updateScore(); }
+  G.b5Done++;
+  document.getElementById('b5-prog').style.width = Math.round(G.b5Done/G.scenario.big5.length*100)+'%';
+  if (G.b5Done === G.scenario.big5.length) document.getElementById('btn-phase3').disabled = false;
+}
+
+// ── PHASE 3 ──
+function goPhase3() {
+  buildPhase3();
+  show('screen-score');
+  document.getElementById('phase-pill').textContent = 'Phase 3 — Score';
+}
+
+function buildPhase3() {
+  var items = G.scenario.items.slice().sort(function(){ return Math.random()-.5; });
+  G.placements = {};
+  G.selected = null;
+
+  var html = items.map(function(item){
+    return '<div class="drag-item" id="di-'+item.id+'" data-id="'+item.id+'">'+item.label+'</div>';
+  }).join('');
+  document.getElementById('pool-items').innerHTML = html;
+  ['tier-1','tier-2','tier-3'].forEach(function(t){ document.getElementById('ti-'+t).innerHTML = ''; });
+
+  items.forEach(function(item){
+    document.getElementById('di-'+item.id).addEventListener('click', function(){ selectItem(item.id); });
+  });
+  ['tier-1','tier-2','tier-3'].forEach(function(t){
+    document.getElementById('td-'+t).addEventListener('click', function(){ placeSelected(t); });
+  });
+}
+
+function selectItem(id) {
+  var el = document.getElementById('di-'+id);
+  if (el.classList.contains('placed')) return;
+  if (G.selected === id) {
+    G.selected = null;
+    el.classList.remove('selected');
+    document.querySelectorAll('.tier-drop').forEach(function(t){ t.classList.remove('tap-ready'); });
+    return;
+  }
+  document.querySelectorAll('.drag-item').forEach(function(e){ e.classList.remove('selected'); });
+  G.selected = id;
+  el.classList.add('selected');
+  document.querySelectorAll('.tier-drop').forEach(function(t){ t.classList.add('tap-ready'); });
+  toast('Now tap a tier to place it →', '');
+}
+
+function placeSelected(tierId) {
+  if (!G.selected) return;
+  var id = G.selected;
+  var el = document.getElementById('di-'+id);
+  el.classList.remove('selected');
+  el.classList.add('placed');
+  G.selected = null;
+  document.querySelectorAll('.tier-drop').forEach(function(t){ t.classList.remove('tap-ready'); });
+  G.placements[id] = tierId;
+
+  var label = el.textContent.trim();
+  var chip = document.createElement('div');
+  chip.className = 'tier-chip';
+  chip.textContent = label;
+  chip.title = 'Tap to remove';
+  chip.addEventListener('click', function(){
+    el.classList.remove('placed');
+    chip.remove();
+    delete G.placements[id];
+  });
+  document.getElementById('ti-'+tierId).appendChild(chip);
+}
+
+// ── RESULTS ──
+function showResults() {
+  var items = G.scenario.items;
+  G.tierCorrect = 0;
+  items.forEach(function(item){
+    if (G.placements[item.id] === item.tier) G.tierCorrect++;
+  });
+  G.score += G.tierCorrect * 10;
+  updateScore();
+
+  var maxScore = G.scenario.criteria.length*10 + G.scenario.big5.length*20 + items.length*10;
+  var pct = Math.round(G.score/maxScore*100);
+
+  var badge, badgeClass, msg;
+  if (pct >= 85) {
+    badge = '🌟 Excellent'; badgeClass = 'badge-excellent';
+    msg = '"Brilliant work. You\'re reading leads accurately, protecting bookings, and scoring with precision. This is what good looks like on the phones."';
+  } else if (pct >= 70) {
+    badge = '👍 Good'; badgeClass = 'badge-good';
+    msg = '"Solid overall. A few things slipped — check the Big 5 feedback carefully. The gap between Good and Excellent is one or two habits done consistently."';
+  } else if (pct >= 55) {
+    badge = '⚠️ Getting There'; badgeClass = 'badge-min';
+    msg = '"You\'ve got the fundamentals but key checkpoints are slipping. Review the Big 5 feedback, then try again with a different scenario."';
+  } else {
+    badge = '📚 Keep Practising'; badgeClass = 'badge-below';
+    msg = '"This is what the trainer is for. Go back through the Quality Standards material, then come back. Every rep makes the next one better."';
+  }
+
+  document.getElementById('results-card').innerHTML =
+    '<div class="result-badge '+badgeClass+'">'+badge+'</div>'
+    +'<div><span class="result-score">'+pct+'</span><span class="result-denom">%</span></div>'
+    +'<div class="result-label">'+G.score+' of '+maxScore+' possible points</div>'
+    +'<div class="result-breakdown">'
+    +'<div class="rb-card"><div class="rb-num">'+G.qualCorrect+'/'+G.scenario.criteria.length+'</div><div class="rb-label">Criteria correct</div></div>'
+    +'<div class="rb-card"><div class="rb-num">'+G.b5Correct+'/'+G.scenario.big5.length+'</div><div class="rb-label">Big 5 correct</div></div>'
+    +'<div class="rb-card"><div class="rb-num">'+G.tierCorrect+'/'+items.length+'</div><div class="rb-label">Tiers correct</div></div>'
+    +'</div>'
+    +'<div class="result-msg">'+msg+'</div>';
+
+  show('screen-results');
+  document.getElementById('phase-pill').textContent = 'Results';
+  if (pct >= 70) confetti();
+}
+
+// ── UTILS ──
+function updateScore() {
+  var el = document.getElementById('score-display');
+  el.textContent = G.score;
+  el.classList.remove('ping');
+  void el.offsetWidth;
+  el.classList.add('ping');
+}
+
+var _toastTimer;
+function toast(msg, type) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type;
+  t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2500);
+}
+
+function confetti() {
+  var colors = ['#00AEEF','#0A3542','#FFD700','#FF6B6B','#6BFF9E','#FF9F43','#fff'];
+  for (var i=0; i<100; i++) {
+    (function(i){
+      setTimeout(function(){
+        var p = document.createElement('div');
+        p.className = 'piece';
+        p.style.cssText = 'left:'+Math.random()*100+'vw;top:-10px;'
+          +'background:'+colors[Math.floor(Math.random()*colors.length)]+';'
+          +'width:'+(6+Math.random()*8)+'px;height:'+(6+Math.random()*8)+'px;'
+          +'border-radius:'+(Math.random()>.5?'50%':'2px')+';'
+          +'animation-duration:'+(2+Math.random()*2)+'s;'
+          +'animation-delay:'+(Math.random()*.4)+'s;';
+        document.body.appendChild(p);
+        setTimeout(function(){ p.remove(); }, 3000);
+      }, i*25);
+    })(i);
+  }
+}
+</script>
+</body>
+</html>
