@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>The Scorecard — 5 Pillars of a Booking Call | Alpha Hippo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;--navy3:#04141B;
+  --sky:#00AEEF;--sky2:#0090C4;--sky-dim:rgba(0,174,239,.14);
+  --green:#22C58B;--green-dim:rgba(34,197,139,.14);
+  --red:#F76B62;--red-dim:rgba(247,107,98,.14);
+  --gold:#E3A93E;--gold-dim:rgba(227,169,62,.14);
+  --ink:#EAF3F7;--muted:#7E97A2;--faint:#3C5661;
+  --font:'DM Sans',system-ui,sans-serif;--serif:'DM Serif Display',Georgia,serif;--mono:'DM Mono','SF Mono',monospace;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--navy3);color:var(--ink);font-family:var(--font);overflow-x:hidden;}
+.wrap{max-width:660px;margin:0 auto;padding:0 0 70px;}
+::selection{background:var(--sky);color:#fff;}
+
+/* ═══ SCORE RAIL ═══ */
+.rail{position:sticky;top:0;z-index:60;background:rgba(4,20,27,.94);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.06);padding:9px 14px;}
+.rail-inner{max-width:660px;margin:0 auto;display:flex;align-items:center;gap:10px;}
+.rail-pills{display:flex;gap:5px;flex:1;}
+.rp{flex:1;text-align:center;padding:6px 2px 5px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid var(--faint);transition:all .45s ease;}
+.rp-ico{font-size:12px;line-height:1;}
+.rp-pts{font-family:var(--mono);font-size:9.5px;color:var(--muted);margin-top:3px;transition:color .4s;}
+.rp.done{background:var(--green-dim);border-color:var(--green);}
+.rp.done .rp-pts{color:var(--green);}
+.rp.active{border-color:var(--sky);background:var(--sky-dim);}
+.rail-total{font-family:var(--mono);font-size:13px;font-weight:500;white-space:nowrap;}
+.rail-total span{color:var(--muted);font-size:10px;}
+
+/* ═══ HERO ═══ */
+.hero{padding:52px 22px 40px;text-align:center;position:relative;overflow:hidden;}
+.hero-glow{position:absolute;width:420px;height:420px;border-radius:50%;background:radial-gradient(rgba(0,174,239,.15),transparent 70%);top:-170px;left:50%;transform:translateX(-50%);pointer-events:none;}
+.hero-eyebrow{position:relative;color:var(--sky);font-size:10px;font-weight:700;letter-spacing:.24em;margin-bottom:15px;}
+.hero-title{position:relative;font-family:var(--serif);font-size:clamp(30px,7vw,46px);line-height:1.08;margin-bottom:13px;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{position:relative;color:var(--muted);font-size:14px;line-height:1.7;max-width:440px;margin:0 auto 24px;}
+.hero-nums{position:relative;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.hn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:11px;padding:10px 16px;min-width:78px;}
+.hn-n{font-family:var(--serif);font-size:22px;color:var(--sky);line-height:1;}
+.hn-l{font-size:8.5px;color:var(--muted);letter-spacing:.13em;margin-top:4px;font-weight:700;}
+
+/* ═══ SECTIONS ═══ */
+.sec{padding:6px 18px 46px;}
+.sec-eyebrow{display:flex;align-items:center;gap:9px;color:var(--sky);font-size:10px;font-weight:700;letter-spacing:.17em;margin-bottom:10px;}
+.sec-eyebrow .pw{font-family:var(--mono);font-size:9px;color:var(--faint);letter-spacing:.08em;white-space:nowrap;}
+.sec-title{font-family:var(--serif);font-size:23px;margin-bottom:7px;line-height:1.2;}
+.sec-sub{color:var(--muted);font-size:13.5px;line-height:1.65;margin-bottom:18px;}
+.panel{background:var(--navy2);border-radius:18px;border:1px solid rgba(255,255,255,.06);padding:22px 19px;}
+.panel.locked{opacity:.4;pointer-events:none;filter:saturate(.4);}
+.lock-note{text-align:center;font-size:12px;color:var(--muted);padding:14px 0 2px;}
+
+/* scenario strip */
+.scen{background:rgba(255,255,255,.03);border-left:3px solid var(--gold);border-radius:0 9px 9px 0;padding:11px 13px;margin-bottom:18px;}
+.scen-l{font-size:9px;font-weight:700;letter-spacing:.15em;color:var(--gold);margin-bottom:5px;}
+.scen-t{font-size:12.5px;color:var(--ink);line-height:1.6;}
+.scen-t b{color:#fff;}
+
+.step-l{font-size:9.5px;font-weight:700;letter-spacing:.13em;color:var(--sky);margin:20px 0 10px;}
+.step-l:first-child{margin-top:0;}
+.said{font-size:13.5px;font-style:italic;color:var(--ink);background:rgba(255,255,255,.03);border-left:3px solid var(--sky);border-radius:0 9px 9px 0;padding:10px 13px;margin-bottom:13px;line-height:1.6;}
+
+/* generic option buttons */
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);color:var(--ink);border-radius:10px;padding:11px 13px;font-family:var(--font);font-size:12.5px;text-align:left;cursor:pointer;line-height:1.5;transition:all .16s;}
+.opt:hover:not(:disabled){border-color:var(--sky);background:var(--sky-dim);}
+.opt.good{border-color:var(--green);background:var(--green-dim);}
+.opt.bad{border-color:var(--red);background:var(--red-dim);}
+.opt:disabled{cursor:default;}
+.fb{font-size:12.5px;line-height:1.6;margin-top:11px;padding-top:11px;border-top:1px solid rgba(255,255,255,.07);}
+.fb.g{color:var(--green);}
+.fb.b{color:var(--red);}
+.fb b{color:#fff;}
+
+/* ═══ P1 · RECALL LADDER ═══ */
+.ladder{display:flex;flex-direction:column-reverse;gap:0;position:relative;margin-bottom:6px;}
+.rung{display:flex;align-items:stretch;gap:0;background:rgba(255,255,255,.03);border:1.5px solid rgba(255,255,255,.09);border-radius:10px;margin-bottom:7px;cursor:pointer;transition:all .2s;overflow:hidden;text-align:left;font-family:var(--font);color:var(--ink);}
+.rung:hover:not(:disabled){border-color:var(--sky);}
+.rung:disabled{cursor:default;}
+.rung-n{width:38px;flex-shrink:0;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:var(--muted);}
+.rung-b{padding:10px 12px;flex:1;}
+.rung-q{font-size:12.5px;font-style:italic;line-height:1.5;}
+.rung-r{font-size:11.5px;color:var(--muted);margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.07);display:none;line-height:1.5;}
+.rung.used{border-color:var(--sky);background:var(--sky-dim);}
+.rung.used .rung-n{background:var(--sky);color:#04141B;font-weight:700;}
+.rung.used .rung-r{display:block;}
+.rung.clicked{border-color:var(--green);background:var(--green-dim);}
+.rung.clicked .rung-n{background:var(--green);color:#04141B;}
+.blast{width:100%;background:rgba(247,107,98,.1);border:1.5px dashed rgba(247,107,98,.35);color:var(--red);border-radius:10px;padding:10px;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;transition:all .16s;margin-top:4px;}
+.blast:hover:not(:disabled){background:rgba(247,107,98,.18);}
+.blast:disabled{opacity:.55;cursor:default;}
+
+/* ═══ P2 · BRANCH ROUTER ═══ */
+.router{display:flex;gap:7px;flex-wrap:wrap;}
+.rt{flex:1;min-width:150px;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);border-radius:11px;padding:12px;cursor:pointer;text-align:left;font-family:var(--font);color:var(--ink);transition:all .16s;}
+.rt:hover:not(:disabled){border-color:var(--sky);background:var(--sky-dim);}
+.rt:disabled{cursor:default;}
+.rt-t{font-size:12.5px;font-weight:700;margin-bottom:4px;}
+.rt-s{font-size:11px;color:var(--muted);line-height:1.45;}
+.rt.good{border-color:var(--green);background:var(--green-dim);}
+.rt.bad{border-color:var(--red);background:var(--red-dim);}
+
+/* ═══ P3 · WORDING CHOOSER ═══ */
+.pitch{background:rgba(255,255,255,.03);border-radius:11px;padding:15px;font-size:14px;line-height:2.05;margin-bottom:16px;}
+.gap{display:inline;padding:2px 7px;border-radius:6px;background:rgba(227,169,62,.14);border-bottom:2px dashed var(--gold);color:var(--gold);font-weight:600;transition:all .25s;}
+.gap.filled{background:var(--green-dim);border-bottom:2px solid var(--green);color:var(--green);}
+.gap.weak{background:var(--red-dim);border-bottom:2px solid var(--red);color:var(--red);}
+.gapq{margin-bottom:14px;}
+.gapq.done{opacity:.45;}
+.gapq-l{font-size:9.5px;font-weight:700;letter-spacing:.12em;color:var(--muted);margin-bottom:7px;}
+.gapq-o{display:flex;flex-direction:column;gap:6px;}
+.strength-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.strength-l{font-size:9.5px;font-weight:700;letter-spacing:.1em;color:var(--muted);white-space:nowrap;}
+.strength-bg{flex:1;height:7px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
+.strength-fill{height:100%;width:0%;border-radius:4px;background:linear-gradient(90deg,var(--red),var(--gold),var(--green));transition:width .55s cubic-bezier(.34,1.2,.64,1);}
+
+/* ═══ P4 · WEAKENER SPOTTER ═══ */
+.transcript{background:rgba(255,255,255,.03);border-radius:11px;padding:15px;font-size:13.5px;line-height:2;margin-bottom:14px;}
+.w{cursor:pointer;padding:1px 4px;border-radius:5px;border-bottom:1px dotted var(--faint);transition:all .18s;}
+.w:hover{background:rgba(255,255,255,.08);}
+.w.hit{background:var(--red-dim);color:var(--red);border-bottom:2px solid var(--red);font-weight:600;text-decoration:line-through;}
+.w.miss{background:rgba(255,255,255,.06);color:var(--muted);border-bottom:1px solid var(--faint);}
+.spot-hud{display:flex;gap:8px;justify-content:space-between;font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-bottom:12px;flex-wrap:wrap;}
+.spot-hud b{color:var(--ink);}
+
+/* ═══ P5 · SLOT PICKER ═══ */
+.slots{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+@media(max-width:420px){.slots{grid-template-columns:1fr;}}
+.slot{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);border-radius:11px;padding:12px;cursor:pointer;text-align:left;font-family:var(--font);color:var(--ink);transition:all .16s;}
+.slot:hover:not(:disabled){border-color:var(--sky);background:var(--sky-dim);}
+.slot:disabled{cursor:default;}
+.slot-d{font-family:var(--mono);font-size:13px;font-weight:500;margin-bottom:3px;}
+.slot-tag{font-size:10px;color:var(--muted);}
+.slot.good{border-color:var(--green);background:var(--green-dim);}
+.slot.part{border-color:var(--gold);background:var(--gold-dim);}
+.slot.bad{border-color:var(--red);background:var(--red-dim);}
+
+/* ═══ SOUND TOGGLE ═══ */
+.snd{background:rgba(255,255,255,.05);border:1px solid var(--faint);color:var(--muted);border-radius:8px;width:30px;height:30px;font-size:13px;cursor:pointer;flex-shrink:0;transition:all .18s;line-height:1;}
+.snd:hover{border-color:var(--sky);color:var(--ink);}
+.snd.off{opacity:.5;}
+
+/* ═══ DEBRIEF (final) ═══ */
+.deb-wrap{display:none;padding:8px 18px 60px;}
+.deb-wrap.show{display:block;animation:rise .55s ease;}
+@keyframes rise{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.deb-head{text-align:center;margin-bottom:26px;}
+.deb-eyebrow{color:var(--sky);font-size:10px;font-weight:700;letter-spacing:.22em;margin-bottom:12px;}
+.deb-total{font-family:var(--serif);font-size:64px;line-height:1;}
+.deb-total small{font-size:24px;color:var(--muted);}
+.deb-band{display:inline-block;border-radius:9px;padding:7px 16px;font-size:11.5px;font-weight:700;letter-spacing:.06em;margin-top:12px;}
+.deb-band.A{background:var(--green-dim);color:var(--green);border:1px solid var(--green);}
+.deb-band.B{background:var(--sky-dim);color:var(--sky);border:1px solid var(--sky);}
+.deb-band.C{background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold);}
+.deb-band.D{background:var(--red-dim);color:var(--red);border:1px solid var(--red);}
+
+/* stacked 5-segment total bar — shows where the 100 actually went */
+.tbar{display:flex;gap:3px;margin:22px 0 8px;height:26px;}
+.tseg{flex:1;background:rgba(255,255,255,.05);border-radius:5px;overflow:hidden;position:relative;}
+.tseg-f{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:5px;transition:width .8s cubic-bezier(.34,1.1,.64,1);}
+.tbar-l{display:flex;gap:3px;font-family:var(--mono);font-size:8.5px;color:var(--muted);}
+.tbar-l div{flex:1;text-align:center;}
+
+.deb-rows{display:flex;flex-direction:column;gap:9px;margin-top:26px;}
+.drow{background:var(--navy2);border:1px solid rgba(255,255,255,.06);border-radius:13px;padding:14px 15px;border-left:3px solid var(--c,var(--sky));}
+.drow-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px;}
+.drow-n{font-size:13.5px;font-weight:700;}
+.drow-p{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--c,var(--sky));white-space:nowrap;}
+.li{display:flex;justify-content:space-between;gap:9px;font-size:11.5px;line-height:1.5;padding:4px 0;color:var(--muted);}
+.li-t{flex:1;}
+.li-p{font-family:var(--mono);font-size:11px;white-space:nowrap;}
+.li.won{color:var(--ink);}
+.li.won .li-p{color:var(--green);}
+.li.lost .li-p{color:var(--red);}
+.focus{background:var(--gold-dim);border:1px solid rgba(227,169,62,.3);border-radius:12px;padding:13px 15px;margin-top:20px;font-size:12.5px;line-height:1.65;color:var(--gold);}
+.focus b{color:#fff;}
+.caps-box{margin-top:14px;background:rgba(247,107,98,.06);border:1px solid rgba(247,107,98,.18);border-radius:12px;padding:13px 15px;}
+.caps-l{font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--red);margin-bottom:9px;line-height:1.5;}
+.caps-i{font-size:11.5px;color:var(--muted);line-height:1.6;margin-bottom:4px;padding-left:11px;position:relative;}
+.caps-i::before{content:'·';position:absolute;left:2px;color:var(--red);font-weight:700;}
+.logged{margin-top:14px;font-size:11.5px;color:var(--muted);line-height:1.7;padding:0 4px;}
+.logged b{color:var(--ink);}
+.again{display:block;margin:24px auto 0;background:var(--navy2);color:var(--ink);border:1px solid rgba(255,255,255,.12);border-radius:11px;padding:12px 26px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;}
+.again:hover{background:var(--navy);}
+</style>
+</head>
+<body>
+
+<div class="rail">
+  <div class="rail-inner">
+    <div class="rail-pills">
+      <div class="rp active" id="rp-1"><div class="rp-ico">🪜</div><div class="rp-pts" id="rpp-1">—/20</div></div>
+      <div class="rp" id="rp-2"><div class="rp-ico">📉</div><div class="rp-pts" id="rpp-2">—/20</div></div>
+      <div class="rp" id="rp-3"><div class="rp-ico">🎯</div><div class="rp-pts" id="rpp-3">—/20</div></div>
+      <div class="rp" id="rp-4"><div class="rp-ico">🤝</div><div class="rp-pts" id="rpp-4">—/20</div></div>
+      <div class="rp" id="rp-5"><div class="rp-ico">📅</div><div class="rp-pts" id="rpp-5">—/20</div></div>
+    </div>
+    <div class="rail-total"><span>SCORE</span> <b id="rail-score">0</b>/100</div>
+    <button class="snd" id="snd" title="Mute sounds">🔊</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-eyebrow">ALPHA HIPPO · THE SCORECARD</div>
+    <div class="hero-title">Five pillars.<br><em>One hundred points.</em></div>
+    <div class="hero-sub">Every booking call gets scored the same way. Work one real call through all five pillars and watch where the points actually go — and where they quietly disappear.</div>
+    <div class="hero-nums">
+      <div class="hn"><div class="hn-n">5</div><div class="hn-l">PILLARS</div></div>
+      <div class="hn"><div class="hn-n">20</div><div class="hn-l">EACH</div></div>
+      <div class="hn"><div class="hn-n">A–D</div><div class="hn-l">BAND</div></div>
+    </div>
+  </div>
+
+  <!-- ══════════ CONTEXT ══════════ -->
+  <div class="sec">
+    <div class="sec-eyebrow">BEFORE YOU START</div>
+    <div class="sec-title">Your call today</div>
+    <div class="panel">
+      <div class="scen">
+        <div class="scen-l">📋 THE LEAD</div>
+        <div class="scen-t"><b>Sandra and Darren</b> · Kellyville NSW · booked at the door by <b>Levi</b> back in March, <b>4 months ago</b>. Never sat the appointment. Bill on file: <b>$600 a quarter</b>. Aged lead, so this is Variant A.</div>
+      </div>
+      <div class="scen" style="border-left-color:var(--sky);">
+        <div class="scen-l" style="color:var(--sky);">⚖️ HOW SCORING WORKS</div>
+        <div class="scen-t">Each pillar is worth 20, so every call scores out of 100. A score of 68 tells you a call was average — the <b>pillar</b> scores tell you which part was average, so you know what to fix tomorrow. The Big 5 hasn't changed and still runs separately.</div>
+      </div>
+      <div class="scen" style="border-left-color:var(--green);margin-bottom:0;">
+        <div class="scen-l" style="color:var(--green);">🔁 THE ORDER</div>
+        <div class="scen-t">Recall and Diagnosis → Bill and Pain → Mini Pitch → The Zoom Close → Booking It In. Bill and Pain sits <b>before</b> the pitch on purpose, so the pitch gets delivered in their numbers instead of generic.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ PILLAR 1 ══════════ -->
+  <div class="sec">
+    <div class="sec-eyebrow">RECALL AND DIAGNOSIS <span class="pw">20 POINTS</span></div>
+    <div class="sec-title">Get them to remember, then find out why</div>
+    <div class="sec-sub">Two jobs, in that order. Asking why they didn't go ahead when they've no idea who you are just sounds like an accusation.</div>
+    <div class="panel" id="p1">
+
+      <div class="step-l">STEP 1 · THE RECALL LADDER (8 PTS)</div>
+      <div class="said">Sandra: "Sorry, who's this again?"</div>
+      <div class="sec-sub" style="margin-bottom:13px;font-size:12.5px;">Four rungs. Climb them <b>one at a time</b> until it clicks — you're scored on judgment, not volume.</div>
+
+      <div class="ladder" id="ladder">
+        <button class="rung" data-r="4" id="rung-4">
+          <span class="rung-n">4</span>
+          <span class="rung-b">
+            <span class="rung-q">"You told him around six hundred a quarter."</span>
+            <span class="rung-r" id="rr-4"></span>
+          </span>
+        </button>
+        <button class="rung" data-r="3" id="rung-3">
+          <span class="rung-n">3</span>
+          <span class="rung-b">
+            <span class="rung-q">"It was the place with the double garage on Wrights Road."</span>
+            <span class="rung-r" id="rr-3"></span>
+          </span>
+        </button>
+        <button class="rung" data-r="2" id="rung-2">
+          <span class="rung-n">2</span>
+          <span class="rung-b">
+            <span class="rung-q">"You and Darren were both home at the time."</span>
+            <span class="rung-r" id="rr-2"></span>
+          </span>
+        </button>
+        <button class="rung" data-r="1" id="rung-1">
+          <span class="rung-n">1</span>
+          <span class="rung-b">
+            <span class="rung-q">"Back in March you had a chat with Levi out the front."</span>
+            <span class="rung-r" id="rr-1"></span>
+          </span>
+        </button>
+      </div>
+      <button class="blast" id="blast">⚡ Fire all four rungs at once</button>
+      <div id="p1s1fb"></div>
+
+      <div id="p1s2" style="display:none;">
+        <div class="step-l">STEP 2 · THE CONCERNS QUESTION (6 PTS)</div>
+        <div class="said">Sandra: "Oh, Levi! Yeah, I remember now."</div>
+        <div class="opts" id="p1s2-opts">
+          <button class="opt" data-c="a">"So why didn't you go ahead with it in the end?"</button>
+          <button class="opt" data-c="b">"Were there any particular concerns, or was it something we did?"</button>
+          <button class="opt" data-c="c">"I'm guessing the price probably put you off?"</button>
+        </div>
+        <div id="p1s2fb"></div>
+      </div>
+
+      <div id="p1s3" style="display:none;">
+        <div class="step-l">STEP 3 · THE HIGHEST-VALUE QUESTION (6 PTS)</div>
+        <div class="said">Sandra: "Honestly? Darren was working nights that month and we just never got round to it."</div>
+        <div class="opts" id="p1s3-opts">
+          <button class="opt" data-c="a">Move straight to the bill — you've got your reason.</button>
+          <button class="opt" data-c="b">"What was it that made you book in with Levi at the door in the first place?"</button>
+          <button class="opt" data-c="c">"Has Darren's roster settled down since?"</button>
+        </div>
+        <div id="p1s3fb"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ PILLAR 2 ══════════ -->
+  <div class="sec">
+    <div class="sec-eyebrow">BILL AND PAIN <span class="pw">20 POINTS</span></div>
+    <div class="sec-title">The bill's on file — so verify, don't collect</div>
+    <div class="sec-sub">Reference the number instead of asking cold. It proves we've got a record of them, and anchors them before they answer.</div>
+    <div class="panel locked" id="p2">
+      <div class="lock-note" id="p2lock">🔒 Finish Pillar 1 to open this</div>
+
+      <div id="p2body" style="display:none;">
+        <div class="step-l">STEP 1 · SHE SAYS IT WENT DOWN (10 PTS)</div>
+        <div class="said">You: "You told Levi you were sitting around six hundred a quarter. Is that still about right, or has it crept up?"<br><br>Sandra: "Actually it's gone <b>down</b> a bit — we switched retailers in June."</div>
+        <div class="router" id="p2s1-opts">
+          <button class="rt" data-c="a"><div class="rt-t">Read the compounder anyway</div><div class="rt-s">Run the 10 and 25 year figures as scripted.</div></button>
+          <button class="rt" data-c="b"><div class="rt-t">Find out how it went down</div><div class="rt-s">Retailer switch, cut usage, or installed something?</div></button>
+          <button class="rt" data-c="c"><div class="rt-t">Skip pain, go to the pitch</div><div class="rt-s">The bill dropped — no pain to work with.</div></button>
+        </div>
+        <div id="p2s1fb"></div>
+
+        <div id="p2s2" style="display:none;">
+          <div class="step-l">STEP 2 · LENGTH OF STAY DECIDES THE ANGLE (10 PTS)</div>
+          <div class="said">You: "How long are you two planning on staying put?"<br><br>Sandra: "Oh, we're here for good. Twenty years at least — it's our forever home."</div>
+          <div class="router" id="p2s2-opts">
+            <button class="rt" data-c="a"><div class="rt-t">Ownership angle</div><div class="rt-s">Read 10 and 25 year. Own something, or rent electricity forever.</div></button>
+            <button class="rt" data-c="b"><div class="rt-t">Property value angle</div><div class="rt-s">Read 5 year, pivot to what it does to the house.</div></button>
+            <button class="rt" data-c="c"><div class="rt-t">Disqualify</div><div class="rt-s">Log Not Qualified, don't push.</div></button>
+          </div>
+          <div id="p2s2fb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ PILLAR 3 ══════════ -->
+  <div class="sec">
+    <div class="sec-eyebrow">MINI PITCH <span class="pw">20 POINTS</span></div>
+    <div class="sec-title">One tight 20-second run</div>
+    <div class="sec-sub">Same words, four places where people quietly water it down. Pick the version that scores.</div>
+    <div class="panel locked" id="p3">
+      <div class="lock-note" id="p3lock">🔒 Finish Pillar 2 to open this</div>
+
+      <div id="p3body" style="display:none;">
+        <div class="strength-row">
+          <div class="strength-l">💪 PITCH STRENGTH</div>
+          <div class="strength-bg"><div class="strength-fill" id="p3fill"></div></div>
+          <div class="strength-l" id="p3pct" style="min-width:34px;text-align:right;">0%</div>
+        </div>
+
+        <div class="pitch" id="p3pitch">
+          "Now <span class="gap" id="g1">[ 1 ]</span>, and we were able to create you a custom design system that <span class="gap" id="g2">[ 2 ]</span>, meaning you're <span class="gap" id="g3">[ 3 ]</span>, especially as it costs <span class="gap" id="g4">[ 4 ]</span> to install. Is it such a bad idea to see what the numbers look like with one of our specialists?"
+        </div>
+
+        <div class="gapq" id="q1">
+          <div class="gapq-l">GAP 1 · THE OPENING</div>
+          <div class="gapq-o">
+            <button class="opt" data-g="1" data-v="1">if the numbers did look like this</button>
+            <button class="opt" data-g="1" data-v="0">the numbers are going to look like this</button>
+          </div>
+        </div>
+        <div class="gapq" id="q2">
+          <div class="gapq-l">GAP 2 · THE ACTUAL PITCH</div>
+          <div class="gapq-o">
+            <button class="opt" data-g="2" data-v="0">could potentially save you around about what it costs to repay</button>
+            <button class="opt" data-g="2" data-v="1">saves you more on the power bill than what it costs to repay</button>
+          </div>
+        </div>
+        <div class="gapq" id="q3">
+          <div class="gapq-l">GAP 3 · THE TIMING</div>
+          <div class="gapq-o">
+            <button class="opt" data-g="3" data-v="1">better off financially from day one</button>
+            <button class="opt" data-g="3" data-v="0">going to be better off eventually</button>
+          </div>
+        </div>
+        <div class="gapq" id="q4">
+          <div class="gapq-l">GAP 4 · THE COST</div>
+          <div class="gapq-o">
+            <button class="opt" data-g="4" data-v="0">very little upfront</button>
+            <button class="opt" data-g="4" data-v="1">zero dollars upfront</button>
+          </div>
+        </div>
+        <div id="p3fb"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ PILLAR 4 ══════════ -->
+  <div class="sec">
+    <div class="sec-eyebrow">THE ZOOM CLOSE <span class="pw">20 POINTS</span></div>
+    <div class="sec-title">Don't talk the appointment down</div>
+    <div class="sec-sub">Every softener buys you agreement now and pays for it with a no-show later. Tap the words costing you points.</div>
+    <div class="panel locked" id="p4">
+      <div class="lock-note" id="p4lock">🔒 Finish Pillar 3 to open this</div>
+
+      <div id="p4body" style="display:none;">
+        <div class="spot-hud">
+          <div>FOUND <b id="p4found">0</b>/4</div>
+          <div>WRONG TAPS <b id="p4wrong">0</b></div>
+        </div>
+        <div class="transcript" id="p4t">
+          "So look, last time <span class="w" data-w="0">Darren's</span> roster was the blocker, and this one's specifically to work around that. Solar doesn't <span class="w" data-w="0">always</span> work on every roof, and that's exactly why we do the assessment rather than <span class="w" data-w="0">quoting</span> you. It's <span class="w" data-w="1">just</span> a quick chat on Zoom, <span class="w" data-w="1">only takes a sec</span>, and there's <span class="w" data-w="1">no obligation at all</span> — you'd <span class="w" data-w="1">probably</span> find it useful. Would that be alright?"
+        </div>
+        <div id="p4fb"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ PILLAR 5 ══════════ -->
+  <div class="sec">
+    <div class="sec-eyebrow">BOOKING IT IN PROPERLY <span class="pw">20 POINTS</span></div>
+    <div class="sec-title">The time has to solve the problem</div>
+    <div class="sec-sub">Booked isn't the finish line. These people have already bailed on us once.</div>
+    <div class="panel locked" id="p5">
+      <div class="lock-note" id="p5lock">🔒 Finish Pillar 4 to open this</div>
+
+      <div id="p5body" style="display:none;">
+        <div class="scen" style="margin-bottom:15px;">
+          <div class="scen-l">🔎 WHAT PILLAR 1 TOLD YOU</div>
+          <div class="scen-t">It fell over because <b>Darren was working nights</b>. He's since moved to days — home after <b>6pm weekdays</b>, and free weekends. Today is <b>Monday</b>.</div>
+        </div>
+        <div class="step-l" style="margin-top:0;">PICK THE SLOT (20 PTS)</div>
+        <div class="slots" id="p5-opts">
+          <button class="slot" data-c="tue"><div class="slot-d">Tue · 2:00 pm</div><div class="slot-tag">Soonest available</div></button>
+          <button class="slot" data-c="wed"><div class="slot-d">Wed · 10:00 am</div><div class="slot-tag">Plenty of room</div></button>
+          <button class="slot" data-c="thu"><div class="slot-d">Thu · 6:30 pm</div><div class="slot-tag">Evening slot</div></button>
+          <button class="slot" data-c="sat"><div class="slot-d">Sat · 10:00 am</div><div class="slot-tag">Weekend slot</div></button>
+        </div>
+        <div id="p5fb"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════ DEBRIEF ══════════ -->
+<div class="deb-wrap" id="debrief">
+  <div class="wrap" style="padding-bottom:0;">
+    <div class="deb-head">
+      <div class="deb-eyebrow">CALL DEBRIEF · SANDRA &amp; DARREN</div>
+      <div class="deb-total"><span id="deb-tot">0</span><small>/100</small></div>
+      <div class="deb-band" id="deb-band">—</div>
+    </div>
+
+    <div class="tbar" id="tbar"></div>
+    <div class="tbar-l">
+      <div>RECALL</div><div>BILL</div><div>PITCH</div><div>CLOSE</div><div>BOOKING</div>
+    </div>
+
+    <div class="deb-rows" id="deb-rows"></div>
+
+    <div class="focus" id="deb-focus"></div>
+
+    <div class="caps-box">
+      <div class="caps-l">⚑ CAPS — ANY ONE OF THESE AND THE CALL CAN'T BE GRADED EXCELLENT, WHATEVER THE TOTAL</div>
+      <div class="caps-i">Invented multi-year figure</div>
+      <div class="caps-i">Concerns question never asked</div>
+      <div class="caps-i">Compensation, discount or scarcity language outside approved framing</div>
+      <div class="caps-i">Unverified claim about the company or industry</div>
+      <div class="caps-i">Booked a Zoom on someone selling, moving or already installed</div>
+    </div>
+
+    <div class="logged">The <b>result</b> is logged separately: Booked · Rebooked · Callback Set · Not Booked · Not Qualified · DNC. A call can score 88 and not book, or 60 and book — so score the process, log the result on its own, and watch the gap.</div>
+
+    <button class="again" onclick="location.reload()">↻ Run another call</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   SOUND — Web Audio, no files, mutable
+══════════════════════════════════════════ */
+var AC = null, MUTED = false;
+function ac(){
+  if (AC === null) {
+    try { AC = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch (e) { AC = false; }
+  }
+  return AC;
+}
+function tone(freq, dur, type, vol, delay){
+  if (MUTED) return;
+  var c = ac();
+  if (!c) return;
+  if (c.state === 'suspended') c.resume();
+  var t0 = c.currentTime + (delay || 0);
+  var o = c.createOscillator(), g = c.createGain();
+  o.type = type || 'sine';
+  o.frequency.setValueAtTime(freq, t0);
+  g.gain.setValueAtTime(0, t0);
+  g.gain.linearRampToValueAtTime(vol, t0 + 0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(g); g.connect(c.destination);
+  o.start(t0); o.stop(t0 + dur + 0.02);
+}
+function sTick(){  tone(760, 0.045, 'triangle', 0.05); }
+function sGood(){  tone(620, 0.09, 'sine', 0.085); tone(930, 0.14, 'sine', 0.075, 0.07); }
+function sBad(){   tone(196, 0.17, 'sawtooth', 0.055); }
+function sFound(){ tone(1150, 0.06, 'sine', 0.06); }
+function sPillar(){ [523, 659, 784].forEach(function(f, i){ tone(f, 0.13, 'sine', 0.07, 0.09 + i * 0.075); }); }
+function sDone(){  [523, 659, 784, 1047].forEach(function(f, i){ tone(f, 0.2, 'sine', 0.08, i * 0.105); }); }
+
+document.getElementById('snd').addEventListener('click', function(){
+  MUTED = !MUTED;
+  this.textContent = MUTED ? '🔇' : '🔊';
+  this.classList.toggle('off', MUTED);
+  this.title = MUTED ? 'Unmute sounds' : 'Mute sounds';
+  if (!MUTED) sTick();
+});
+
+/* ══════════════════════════════════════════
+   STATE
+══════════════════════════════════════════ */
+var P = { 1:null, 2:null, 3:null, 4:null, 5:null };
+var p1 = { ladder:0, concerns:0, prompted:0 };
+var p2 = { s1:0, s2:0 };
+
+/* Per-line-item log — this is what makes the final numbers explain
+   themselves instead of looking arbitrary. */
+var LOG = { 1:[], 2:[], 3:[], 4:[], 5:[] };
+function logItem(pillar, label, got, max){
+  LOG[pillar].push({ label: label, got: got, max: max });
+}
+
+function railScore(){
+  var t = 0;
+  for (var k in P) { if (P[k] !== null) t += P[k]; }
+  document.getElementById('rail-score').textContent = t;
+  return t;
+}
+function setPillar(n, pts){
+  P[n] = pts;
+  document.getElementById('rpp-' + n).textContent = pts + '/20';
+  var rp = document.getElementById('rp-' + n);
+  rp.classList.remove('active');
+  rp.classList.add('done');
+  railScore();
+  sPillar();
+  if (n < 5) {
+    var nx = document.getElementById('rp-' + (n + 1));
+    if (nx) nx.classList.add('active');
+    unlock(n + 1);
+  } else {
+    setTimeout(finish, 700);
+  }
+}
+function unlock(n){
+  var panel = document.getElementById('p' + n);
+  var lock = document.getElementById('p' + n + 'lock');
+  var body = document.getElementById('p' + n + 'body');
+  if (!panel) return;
+  panel.classList.remove('locked');
+  if (lock) lock.style.display = 'none';
+  if (body) body.style.display = 'block';
+  panel.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+function fb(id, ok, html){
+  document.getElementById(id).innerHTML =
+    '<div class="fb ' + (ok ? 'g' : 'b') + '">' + html + '</div>';
+  if (ok) sGood(); else sBad();
+}
+function lockOpts(container, chosen, cls, chosenCls){
+  var btns = container.querySelectorAll('button');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].disabled = true;
+    if (btns[i] === chosen) btns[i].classList.add(chosenCls);
+  }
+}
+
+/* ══════════════════════════════════════════
+   PILLAR 1 — LADDER + CONCERNS + PROMPTED
+══════════════════════════════════════════ */
+var RUNG_REPLY = {
+  1: 'Sandra: "March… maybe? We\'ve had a few people knock."',
+  2: 'Sandra: "Oh — Darren was here too? Hang on…"',
+  3: 'Sandra: "Yep, that\'s us. Okay, I think I know who you mean."',
+  4: 'Sandra: "Six hundred, yeah that sounds like what I said."'
+};
+var LADDER_CLICKS_AT = 3; // it clicks on the third rung
+var rungsUsed = 0;
+var p1done = false;
+
+function ladderFinish(pts, ok, msg){
+  p1done = true;
+  document.getElementById('blast').disabled = true;
+  var rungs = document.querySelectorAll('.rung');
+  for (var i = 0; i < rungs.length; i++) rungs[i].disabled = true;
+  p1.ladder = pts;
+  logItem(1, ok ? 'Recall ladder — climbed with judgment' : 'Recall ladder — fired all four at once', pts, 8);
+  fb('p1s1fb', ok, msg);
+  document.getElementById('p1s2').style.display = 'block';
+}
+
+var rungBtns = document.querySelectorAll('.rung');
+for (var ri = 0; ri < rungBtns.length; ri++) {
+  rungBtns[ri].addEventListener('click', function(){
+    if (p1done) return;
+    var n = parseInt(this.getAttribute('data-r'), 10);
+    if (this.classList.contains('used') || this.classList.contains('clicked')) return;
+    rungsUsed++;
+    sTick();
+    document.getElementById('rr-' + n).textContent = RUNG_REPLY[n];
+    if (rungsUsed >= LADDER_CLICKS_AT) {
+      this.classList.add('clicked');
+      ladderFinish(8, true,
+        '<b>That\'s the ladder done right.</b> You climbed one rung at a time and stopped the moment it clicked — ' + rungsUsed + ' rungs, full marks. One rung or all four both score full; it\'s the judgment that\'s scored, not the volume.');
+    } else {
+      this.classList.add('used');
+    }
+  });
+}
+
+document.getElementById('blast').addEventListener('click', function(){
+  if (p1done) return;
+  var rungs = document.querySelectorAll('.rung');
+  for (var i = 0; i < rungs.length; i++) {
+    var n = parseInt(rungs[i].getAttribute('data-r'), 10);
+    document.getElementById('rr-' + n).textContent = RUNG_REPLY[n];
+    rungs[i].classList.add('used');
+  }
+  ladderFinish(4, false,
+    '<b>Too much, all at once.</b> Firing all four off in one breath loses points — it sounds like you\'re reading a file at her, not jogging her memory. Climb them one at a time and stop when it clicks.');
+});
+
+var P1S2 = {
+  a: [3, false, '<b>Half a question.</b> Without the second half you\'ll get "nah, just got busy" and you\'re blind for the rest of the call.'],
+  b: [6, true,  '<b>Both halves.</b> "…or was it something we did?" is what makes it safe for her to be honest. Then shut up — fill the silence and you lose the line.'],
+  c: [0, false, '<b>You just answered it for her.</b> Leading with price plants an objection that might not have existed, and you\'ve lost the real reason.']
+};
+var p1s2opts = document.getElementById('p1s2-opts');
+var b1 = p1s2opts.querySelectorAll('.opt');
+for (var i1 = 0; i1 < b1.length; i1++) {
+  b1[i1].addEventListener('click', function(){
+    var r = P1S2[this.getAttribute('data-c')];
+    lockOpts(p1s2opts, this, 'opt', r[1] ? 'good' : 'bad');
+    p1.concerns = r[0];
+    logItem(1, 'Concerns question — both halves', r[0], 6);
+    fb('p1s2fb', r[1], r[2]);
+    document.getElementById('p1s3').style.display = 'block';
+  });
+}
+
+var P1S3 = {
+  a: [0, false, '<b>Skipped, so it scores 0</b> — even if the call books. This is the highest-value question in the pillar and the one that gets left out most.'],
+  b: [6, true,  '<b>The one that matters most.</b> It makes her say her own motivation out loud, and whatever comes back is ammunition for Pillars 2 and 4.'],
+  c: [3, false, '<b>Useful, but not the question.</b> You\'ll need his roster for Pillar 5 — but you\'ve missed the chance to hear her own reason for booking in the first place.']
+};
+var p1s3opts = document.getElementById('p1s3-opts');
+var b2 = p1s3opts.querySelectorAll('.opt');
+for (var i2 = 0; i2 < b2.length; i2++) {
+  b2[i2].addEventListener('click', function(){
+    var r = P1S3[this.getAttribute('data-c')];
+    lockOpts(p1s3opts, this, 'opt', r[1] ? 'good' : 'bad');
+    p1.prompted = r[0];
+    logItem(1, 'Asked what prompted them at the door', r[0], 6);
+    fb('p1s3fb', r[1], r[2]);
+    setPillar(1, p1.ladder + p1.concerns + p1.prompted);
+  });
+}
+
+/* ══════════════════════════════════════════
+   PILLAR 2 — BRANCH ROUTER
+══════════════════════════════════════════ */
+var P2S1 = {
+  a: [3, false, '<b>This is the trap.</b> Reading the compounder at someone whose bill just dropped costs you the pain line outright — she\'s already "fixed" it in her head.'],
+  b: [10, true, '<b>Right call.</b> A retailer switch is a one-off that gets eaten by the next increase, so the pain is still live. Cut usage is its own angle. Installed something means disqualify.'],
+  c: [0, false, '<b>Straight past the pain.</b> Pitching with no number to point at means the tie-down in Pillar 3 has nothing to hang off.']
+};
+var p2s1opts = document.getElementById('p2s1-opts');
+var b3 = p2s1opts.querySelectorAll('.rt');
+for (var i3 = 0; i3 < b3.length; i3++) {
+  b3[i3].addEventListener('click', function(){
+    var r = P2S1[this.getAttribute('data-c')];
+    lockOpts(p2s1opts, this, 'rt', r[1] ? 'good' : 'bad');
+    p2.s1 = r[0];
+    logItem(2, 'Handled the bill going down', r[0], 10);
+    fb('p2s1fb', r[1], r[2]);
+    document.getElementById('p2s2').style.display = 'block';
+  });
+}
+
+var P2S2 = {
+  a: [10, true, '<b>Correct branch.</b> Twenty years means ownership: "you\'re paying for power either way — the only question is whether you own something at the end or keep renting electricity forever."'],
+  b: [4, false, '<b>Wrong branch.</b> Property value is the two-to-five-year or unsure angle. She just told you it\'s the forever home — that\'s an ownership conversation.'],
+  c: [0, false, '<b>Nothing to disqualify.</b> Disqualify is for selling or moving. She\'s staying twenty years, which is your strongest possible answer.']
+};
+var p2s2opts = document.getElementById('p2s2-opts');
+var b4 = p2s2opts.querySelectorAll('.rt');
+for (var i4 = 0; i4 < b4.length; i4++) {
+  b4[i4].addEventListener('click', function(){
+    var r = P2S2[this.getAttribute('data-c')];
+    lockOpts(p2s2opts, this, 'rt', r[1] ? 'good' : 'bad');
+    p2.s2 = r[0];
+    logItem(2, 'Right branch off length of stay', r[0], 10);
+    fb('p2s2fb', r[1], r[2]);
+    setPillar(2, p2.s1 + p2.s2);
+  });
+}
+
+/* ══════════════════════════════════════════
+   PILLAR 3 — WORDING CHOOSER
+══════════════════════════════════════════ */
+var GAP_TEXT = {
+  '1-1': 'if the numbers did look like this',
+  '1-0': 'the numbers are going to look like this',
+  '2-1': 'saves you more on the power bill than what it costs to repay',
+  '2-0': 'could potentially save you around about what it costs to repay',
+  '3-1': "you're better off financially from day one",
+  '3-0': "going to be better off eventually",
+  '4-1': 'zero dollars upfront',
+  '4-0': 'very little upfront'
+};
+var GAP_FB = {
+  1: ['<b>Hedged into a claim.</b> "If" is what makes it safe to agree with — nobody argues with a hypothetical, and the ask at the end collects on it.',
+      '<b>The conditional tie-down.</b> Safe to agree with, and the ask at the end collects on it.'],
+  2: ['<b>You turned the pitch into a maybe.</b> "Could potentially save you around about" is the whole claim hedged away. This is the actual pitch — everything else is scaffolding.',
+      '<b>Net positive, stated plainly.</b> Saves more than it costs to repay. That\'s the pitch.'],
+  3: ['<b>Day one got buried.</b> "Eventually" is a different offer to "from day one" — and a much weaker one.',
+      '<b>Day one gets its own beat.</b> Don\'t bury it in the middle of the sentence.'],
+  4: ['<b>"Very little" isn\'t zero.</b> Say zero dollars upfront. Softening it invites the cost objection straight back in.',
+      '<b>Zero dollars upfront.</b> No softening, no wiggle room.']
+};
+var GAP_NAME = { '1':'Conditional tie-down kept', '2':'Net positive stated plainly', '3':'Day one got its own beat', '4':'Zero dollars upfront, not softened' };
+var gapsDone = {};
+var gapScore = 0;
+
+function updateStrength(){
+  var n = Object.keys(gapsDone).length;
+  var strongCount = 0;
+  for (var k in gapsDone) { if (gapsDone[k] === 1) strongCount++; }
+  var pct = Math.round(strongCount / 4 * 100);
+  document.getElementById('p3fill').style.width = pct + '%';
+  document.getElementById('p3pct').textContent = pct + '%';
+  if (n === 4) {
+    var allStrong = strongCount === 4;
+    fb('p3fb', allStrong,
+      allStrong
+        ? '<b>That\'s the pitch at full strength.</b> One tight 20-second run — and because you never stopped halfway to check in, you kept the line.'
+        : '<b>' + strongCount + ' of 4 at full strength.</b> Every hedge you leave in is points gone and an objection invited back. Re-read the weak ones above.');
+    setPillar(3, gapScore);
+  }
+}
+
+var gapBtns = document.querySelectorAll('[data-g]');
+for (var i5 = 0; i5 < gapBtns.length; i5++) {
+  gapBtns[i5].addEventListener('click', function(){
+    var g = this.getAttribute('data-g');
+    var v = parseInt(this.getAttribute('data-v'), 10);
+    if (gapsDone[g] !== undefined) return;
+    gapsDone[g] = v;
+    if (v === 1) { gapScore += 5; sFound(); } else { sBad(); }
+    logItem(3, GAP_NAME[g], v === 1 ? 5 : 0, 5);
+    var gapEl = document.getElementById('g' + g);
+    gapEl.textContent = GAP_TEXT[g + '-' + v];
+    gapEl.classList.add(v === 1 ? 'filled' : 'weak');
+    var box = document.getElementById('q' + g);
+    box.classList.add('done');
+    var sib = box.querySelectorAll('.opt');
+    for (var j = 0; j < sib.length; j++) {
+      sib[j].disabled = true;
+      if (sib[j] === this) sib[j].classList.add(v === 1 ? 'good' : 'bad');
+    }
+    var note = document.createElement('div');
+    note.className = 'fb ' + (v === 1 ? 'g' : 'b');
+    note.innerHTML = GAP_FB[g][v];
+    box.appendChild(note);
+    updateStrength();
+  });
+}
+
+/* ══════════════════════════════════════════
+   PILLAR 4 — WEAKENER SPOTTER
+══════════════════════════════════════════ */
+var found = 0, wrong = 0, p4done = false;
+var TOTAL_WEAK = 4;
+var wSpans = document.querySelectorAll('#p4t .w');
+for (var i6 = 0; i6 < wSpans.length; i6++) {
+  wSpans[i6].addEventListener('click', function(){
+    if (p4done) return;
+    if (this.classList.contains('hit') || this.classList.contains('miss')) return;
+    if (this.getAttribute('data-w') === '1') {
+      this.classList.add('hit');
+      sFound();
+      found++;
+      document.getElementById('p4found').textContent = found;
+    } else {
+      this.classList.add('miss');
+      sBad();
+      wrong++;
+      document.getElementById('p4wrong').textContent = wrong;
+    }
+    if (found === TOTAL_WEAK) {
+      p4done = true;
+      var pts = 20 - Math.min(8, wrong * 4);
+      var clean = wrong === 0;
+      logItem(4, 'All four weakeners found', 20, 20);
+      if (wrong > 0) logItem(4, wrong + ' good line' + (wrong > 1 ? 's' : '') + ' flagged by mistake', -Math.min(8, wrong * 4), 0);
+      fb('p4fb', clean,
+        clean
+          ? '<b>All four, nothing wasted.</b> "Just", "only takes a sec", "no obligation at all", "probably" — every one of those talks the appointment down to buy agreement, and you pay for it with a no-show. The bridge and the assessment framing were the parts worth keeping.'
+          : '<b>All four found, but ' + wrong + ' good line' + (wrong > 1 ? 's' : '') + ' flagged too.</b> Naming what stopped it last time and positioning it as an assessment rather than a quote are the two strongest things in that close — don\'t strip those out.');
+      setPillar(4, pts);
+    }
+  });
+}
+
+/* ══════════════════════════════════════════
+   PILLAR 5 — SLOT PICKER
+══════════════════════════════════════════ */
+var P5 = {
+  tue: [6, 'bad', '<b>That books the same fall-over again.</b> Darren isn\'t home at 2pm on a weekday — the whole reason it failed last time. Soonest available is only right if it also solves the problem.'],
+  wed: [6, 'bad', '<b>Same problem.</b> 10am on a weekday means Darren\'s at work. Connect the diagnosis to the calendar or you lose the line, even on a booked call.'],
+  thu: [20, 'good', '<b>Soonest slot that actually works.</b> He\'s home after 6pm, it\'s the earliest evening available, and it directly solves what Pillar 1 uncovered. Full marks.'],
+  sat: [14, 'part', '<b>It solves the problem, but it\'s not the soonest.</b> Thursday evening works for both of them and is two days earlier — every extra day is another chance for it to go cold.']
+};
+var P5_LABEL = {
+  tue: 'Slot chosen — books the same fall-over again',
+  wed: 'Slot chosen — books the same fall-over again',
+  thu: 'Slot solves the diagnosis, and it is the soonest',
+  sat: 'Slot solves the diagnosis, but not the soonest'
+};
+var p5opts = document.getElementById('p5-opts');
+var b5 = p5opts.querySelectorAll('.slot');
+for (var i7 = 0; i7 < b5.length; i7++) {
+  b5[i7].addEventListener('click', function(){
+    var r = P5[this.getAttribute('data-c')];
+    lockOpts(p5opts, this, 'slot', r[1]);
+    logItem(5, P5_LABEL[this.getAttribute('data-c')], r[0], 20);
+    fb('p5fb', r[1] === 'good', r[2]);
+    setPillar(5, r[0]);
+  });
+}
+
+/* ══════════════════════════════════════════
+   SCORECARD
+══════════════════════════════════════════ */
+function finish(){
+  var total = railScore();
+  sDone();
+
+  var NAMES = { 1:'Recall and Diagnosis', 2:'Bill and Pain', 3:'Mini Pitch', 4:'The Zoom Close', 5:'Booking It In' };
+  var COLS  = { 1:'--sky', 2:'--gold', 3:'--green', 4:'--red', 5:'--sky' };
+
+  document.getElementById('deb-tot').textContent = total;
+
+  // ── segmented total bar: each segment is one pillar's 20 ──
+  var tbar = document.getElementById('tbar');
+  tbar.innerHTML = '';
+  for (var n = 1; n <= 5; n++) {
+    var pct = Math.round(P[n] / 20 * 100);
+    var col = P[n] >= 18 ? 'var(--green)' : (P[n] >= 12 ? 'var(--gold)' : 'var(--red)');
+    var seg = document.createElement('div');
+    seg.className = 'tseg';
+    seg.innerHTML = '<div class="tseg-f" data-w="' + pct + '" style="background:' + col + ';"></div>';
+    tbar.appendChild(seg);
+  }
+  // animate after paint
+  requestAnimationFrame(function(){
+    var fills = tbar.querySelectorAll('.tseg-f');
+    for (var i = 0; i < fills.length; i++) {
+      fills[i].style.width = fills[i].getAttribute('data-w') + '%';
+    }
+  });
+
+  // ── per-pillar rows, with the line items that produced the number ──
+  var rows = document.getElementById('deb-rows');
+  rows.innerHTML = '';
+  for (var m = 1; m <= 5; m++) {
+    var items = '';
+    for (var j = 0; j < LOG[m].length; j++) {
+      var it = LOG[m][j];
+      var won = it.max > 0 ? (it.got === it.max) : false;
+      var cls = it.got < 0 ? 'lost' : (won ? 'won' : '');
+      var pts = it.got < 0
+        ? it.got + ' pts'
+        : it.got + ' / ' + it.max;
+      items += '<div class="li ' + cls + '"><div class="li-t">' +
+               (won ? '✓ ' : (it.got < 0 ? '✗ ' : '– ')) + it.label +
+               '</div><div class="li-p">' + pts + '</div></div>';
+    }
+    var col = P[m] >= 18 ? 'var(--green)' : (P[m] >= 12 ? 'var(--gold)' : 'var(--red)');
+    var row = document.createElement('div');
+    row.className = 'drow';
+    row.style.setProperty('--c', col);
+    row.innerHTML =
+      '<div class="drow-h"><div class="drow-n">' + NAMES[m] + '</div>' +
+      '<div class="drow-p">' + P[m] + ' / 20</div></div>' + items;
+    rows.appendChild(row);
+  }
+
+  // ── band ──
+  var band, label;
+  if (total >= 85)      { band = 'A'; label = 'EXCELLENT · 85 TO 100'; }
+  else if (total >= 70) { band = 'B'; label = 'GOOD · 70 TO 84'; }
+  else if (total >= 55) { band = 'C'; label = 'NEEDS IMPROVEMENT · 55 TO 69'; }
+  else                  { band = 'D'; label = 'BELOW STANDARD · UNDER 55'; }
+  var bandEl = document.getElementById('deb-band');
+  bandEl.className = 'deb-band ' + band;
+  bandEl.textContent = band + ' — ' + label;
+
+  // ── focus line ──
+  var lowest = 1, highest = 1;
+  for (var k = 2; k <= 5; k++) {
+    if (P[k] < P[lowest]) lowest = k;
+    if (P[k] > P[highest]) highest = k;
+  }
+  var allTied = P[lowest] === P[highest];
+  var focus;
+  if (allTied && P[lowest] === 20) {
+    focus = '<b>Nothing to single out.</b> All five pillars at full marks — that\'s a call worth keeping as a training example. Divide the total by 10 for the same scale as the rubric score.';
+  } else if (allTied) {
+    focus = '<b>All five pillars scored the same</b>, so there\'s no single weak spot — work the lowest-scoring step inside each one. Divide the total by 10 for the same scale as the rubric score.';
+  } else {
+    focus = '<b>Tomorrow\'s focus: ' + NAMES[lowest] + '</b> (' + P[lowest] + '/20) — the ticks and crosses above show exactly which step cost you. Strongest was ' + NAMES[highest] + ' at ' + P[highest] + '/20. Divide the total by 10 for the same scale as the rubric score.';
+  }
+  document.getElementById('deb-focus').innerHTML = focus;
+
+  var wrap = document.getElementById('debrief');
+  wrap.classList.add('show');
+  wrap.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+</script>
+</body>
+</html>
