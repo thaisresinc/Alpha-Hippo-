@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>The Switchboard — Openers | Alpha Hippo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  /* Body of the board = RESINC navy. Brass survives only as the fittings,
+     the way a real switchboard was dark metal with brass hardware. */
+  --navy:#0A3542;--navy-dk:#061F28;--navy-dp:#04141B;--navy-lt:#14495A;
+  --brass:#C9A227;--brass-lt:#E8C766;--brass-dk:#7E6210;
+  --sky:#00AEEF;--sky-lt:#7FDBFF;--sky-dk:#0072A3;
+  --cream:#EDE9DE;--cream-dk:#C7C2B4;
+  --ink:#0A2028;
+  --green:#22C58B;--red:#F76B62;
+  --font:'DM Sans',system-ui,sans-serif;--serif:'DM Serif Display',Georgia,serif;--mono:'DM Mono','SF Mono',monospace;
+}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font);
+  background:var(--navy-dp);
+  background-image:repeating-linear-gradient(93deg,rgba(0,0,0,.18) 0 2px,transparent 2px 9px),
+                   linear-gradient(160deg,#0F4354,#0A3542 55%,#04141B);
+  color:var(--cream);overflow-x:hidden;
+}
+::selection{background:var(--sky);color:#fff;}
+.board{max-width:680px;margin:0 auto;padding:0 14px 80px;}
+
+/* ═══ MASTHEAD ═══ */
+.mast{text-align:center;padding:44px 10px 30px;}
+.mast-plate{
+  display:inline-block;background:linear-gradient(180deg,var(--brass-lt),var(--brass) 45%,var(--brass-dk));
+  border-radius:5px;padding:5px 18px;color:var(--navy-dk);
+  font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.2em;
+  box-shadow:0 2px 0 rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.4);margin-bottom:20px;
+}
+.mast-t{font-family:var(--serif);font-size:clamp(31px,7.5vw,50px);line-height:1.04;color:var(--cream);margin-bottom:12px;text-shadow:0 2px 0 rgba(0,0,0,.5);}
+.mast-t em{color:var(--sky);font-style:italic;display:block;}
+.mast-s{color:var(--cream-dk);font-size:14px;line-height:1.7;max-width:430px;margin:0 auto;opacity:.8;}
+
+/* ═══ LAMP STRIP (progress, on the machine itself) ═══ */
+.lamps{display:flex;justify-content:center;gap:26px;margin:26px 0 8px;}
+.lamp{text-align:center;}
+.lamp-b{
+  width:15px;height:15px;border-radius:50%;margin:0 auto 6px;
+  background:radial-gradient(circle at 35% 30%,#1B4E5E,#061F28);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.8),0 0 0 2.5px var(--brass-dk);
+  transition:all .5s ease;
+}
+.lamp.lit .lamp-b{
+  background:radial-gradient(circle at 35% 30%,#D6F4FF,var(--sky) 58%,#0072A3);
+  box-shadow:0 0 14px 4px rgba(0,174,239,.6),0 0 0 2.5px var(--sky);
+}
+.lamp-t{font-family:var(--mono);font-size:8px;letter-spacing:.1em;color:rgba(239,230,210,.35);transition:color .5s;}
+.lamp.lit .lamp-t{color:var(--sky-lt);}
+
+/* ═══ STATION (one surface, not a stacked panel) ═══ */
+.station{margin-top:38px;position:relative;}
+.station.shut{opacity:.32;pointer-events:none;filter:grayscale(.55);}
+.st-engrave{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.19em;color:var(--brass-lt);
+  text-align:center;margin-bottom:6px;opacity:.85;
+}
+.st-name{font-family:var(--serif);font-size:22px;text-align:center;margin-bottom:7px;color:var(--cream);}
+.st-note{font-size:13px;line-height:1.65;color:var(--cream-dk);text-align:center;max-width:440px;margin:0 auto 20px;opacity:.75;}
+.st-shut-note{text-align:center;font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:rgba(239,230,210,.4);padding:8px 0;}
+
+/* metal sub-surface */
+.metal{
+  background:linear-gradient(168deg,#15515F,#0C3B49 55%,#082A35);
+  border-radius:12px;padding:20px 17px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -3px 8px rgba(0,0,0,.5),0 5px 16px rgba(0,0,0,.4);
+  border:1px solid rgba(0,0,0,.5);
+}
+.rivet{position:absolute;width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--brass-lt),var(--brass-dk));box-shadow:0 1px 1px rgba(0,0,0,.6);}
+
+/* ═══ 1 · THE CALL SLIP ═══ */
+.slip{
+  background:var(--cream);color:var(--ink);border-radius:3px;padding:18px 19px;
+  box-shadow:0 8px 20px rgba(0,0,0,.5);transform:rotate(-.5deg);position:relative;
+  font-family:var(--mono);
+}
+.slip::before{
+  content:'';position:absolute;top:-9px;left:50%;transform:translateX(-50%);
+  width:52px;height:16px;background:linear-gradient(180deg,#9AA2A6,#5C6468);border-radius:3px;
+  box-shadow:0 2px 4px rgba(0,0,0,.5);
+}
+.slip-h{text-align:center;font-size:9px;letter-spacing:.2em;color:#8A7F68;padding-bottom:11px;margin-bottom:11px;border-bottom:1.5px solid var(--cream-dk);}
+.slip-r{display:flex;justify-content:space-between;gap:10px;padding:8px 9px;border-radius:3px;font-size:11.5px;align-items:baseline;}
+.slip-r.tap{cursor:pointer;border:1.5px dashed transparent;transition:all .16s;}
+.slip-r.tap:hover{border-color:var(--brass-dk);background:rgba(201,162,39,.12);}
+.slip-k{color:#8A7F68;font-size:9.5px;letter-spacing:.08em;flex:1;}
+.slip-v{font-weight:500;text-align:right;}
+.slip-r.right{background:rgba(62,142,90,.16);border-color:var(--green)!important;border-style:solid!important;}
+.slip-r.wrong{background:rgba(181,64,47,.14);border-color:var(--red)!important;border-style:solid!important;}
+.slip-gap{margin-top:12px;padding-top:11px;border-top:1.5px solid var(--cream-dk);display:flex;justify-content:space-between;font-size:10.5px;color:#8A7F68;}
+.slip-gap b{color:#B5251B;}
+
+/* toggle switch pair */
+.tog-row{display:flex;gap:12px;justify-content:center;margin-top:19px;}
+.tog{background:none;border:none;cursor:pointer;text-align:center;padding:0;font-family:var(--font);}
+.tog-b{
+  width:52px;height:30px;border-radius:15px;margin:0 auto 7px;position:relative;
+  background:linear-gradient(180deg,#061F28,#0F4354);box-shadow:inset 0 2px 5px rgba(0,0,0,.7);
+  border:1px solid rgba(0,0,0,.6);transition:all .2s;
+}
+.tog-b::after{
+  content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;
+  background:linear-gradient(180deg,var(--brass-lt),var(--brass-dk));
+  box-shadow:0 2px 3px rgba(0,0,0,.5);transition:all .22s cubic-bezier(.34,1.4,.64,1);
+}
+.tog.on .tog-b{background:linear-gradient(180deg,#12704F,#0A4633);}
+.tog.bad .tog-b{background:linear-gradient(180deg,#6E2E2E,#40191A);}
+.tog.bad .tog-b::after{left:27px;background:linear-gradient(180deg,#FFB3AC,#C4453A);}
+.tog.bad .tog-t{color:var(--red);}
+.tog.on .tog-b::after{left:27px;background:linear-gradient(180deg,#9BF0CC,var(--green));}
+.tog-t{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;color:var(--cream-dk);}
+.tog.on .tog-t{color:#8FE3C4;}
+.tog:disabled{cursor:default;opacity:.5;}
+.tog.on:disabled{opacity:1;}
+
+/* ═══ 2 · THE PATCH BAY ═══ */
+.bay{position:relative;}
+#cables{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;overflow:visible;}
+.jacks{display:grid;grid-template-columns:repeat(4,1fr);gap:13px 9px;position:relative;z-index:2;}
+@media(max-width:470px){.jacks{grid-template-columns:repeat(2,1fr);}}
+.jack{background:none;border:none;cursor:pointer;padding:0;font-family:var(--font);text-align:center;}
+.jack-h{
+  width:38px;height:38px;border-radius:50%;margin:0 auto 7px;position:relative;
+  background:radial-gradient(circle at 40% 35%,#155060,#061F28 72%);
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.9),0 0 0 3px var(--brass-dk),0 1px 0 3px rgba(255,255,255,.07);
+  transition:all .2s;
+}
+.jack-h::after{
+  content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:11px;height:11px;border-radius:50%;background:#0B0803;box-shadow:inset 0 1px 2px rgba(0,0,0,1);
+}
+.jack-t{font-family:var(--mono);font-size:8.5px;line-height:1.35;letter-spacing:.03em;color:var(--cream-dk);opacity:.8;}
+.jack.in .jack-h{box-shadow:inset 0 2px 5px rgba(0,0,0,.9),0 0 0 3px var(--brass),0 0 11px 2px rgba(201,162,39,.4);}
+.jack.in .jack-h::after{background:radial-gradient(circle at 38% 32%,var(--brass-lt),var(--brass-dk));width:15px;height:15px;}
+.jack.in .jack-t{color:var(--brass-lt);opacity:1;}
+.jack.ok .jack-h{box-shadow:inset 0 2px 5px rgba(0,0,0,.9),0 0 0 3px var(--green),0 0 11px 2px rgba(62,142,90,.45);}
+.jack.ok .jack-h::after{background:radial-gradient(circle at 38% 32%,#8FE3A8,var(--green));width:15px;height:15px;}
+.jack.ok .jack-t{color:#8FE3C4;}
+.jack.no .jack-h{box-shadow:inset 0 2px 5px rgba(0,0,0,.9),0 0 0 3px var(--red),0 0 11px 2px rgba(181,64,47,.45);}
+.jack.no .jack-t{color:#F7B3AB;text-decoration:line-through;}
+.jack:disabled{cursor:default;}
+.bay-foot{display:flex;align-items:center;gap:12px;margin-top:20px;flex-wrap:wrap;}
+.bay-count{font-family:var(--mono);font-size:10.5px;color:var(--cream-dk);opacity:.75;}
+.bay-count b{color:var(--brass-lt);}
+.pull{
+  flex:1;min-width:150px;background:linear-gradient(180deg,var(--brass-lt),var(--brass) 45%,var(--brass-dk));
+  color:var(--navy-dk);border:none;border-radius:8px;padding:12px;
+  font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.14em;cursor:pointer;
+  box-shadow:0 3px 0 #5C4708,0 5px 10px rgba(0,0,0,.4);transition:all .12s;
+}
+.pull:active:not(:disabled){transform:translateY(3px);box-shadow:0 0 0 #5C4708;}
+.pull:disabled{opacity:.35;cursor:default;box-shadow:0 3px 0 #5C4708;}
+
+/* ═══ 3 · THE LEVER BANK ═══ */
+.levers{display:flex;flex-direction:column;gap:9px;}
+.lev{
+  display:flex;align-items:stretch;gap:0;background:linear-gradient(180deg,#15515F,#0A2E3A);
+  border:1px solid rgba(0,0,0,.55);border-radius:9px;cursor:pointer;overflow:hidden;
+  font-family:var(--font);color:var(--cream);text-align:left;transition:all .18s;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07);
+}
+.lev:hover:not(:disabled){border-color:var(--brass-dk);}
+.lev-h{
+  width:44px;flex-shrink:0;position:relative;background:linear-gradient(180deg,#061F28,#03131A);
+  display:flex;align-items:center;justify-content:center;border-right:1px solid rgba(0,0,0,.6);
+}
+.lev-h::after{
+  content:'';width:9px;height:24px;border-radius:5px;
+  background:linear-gradient(180deg,var(--brass-lt),var(--brass-dk));
+  box-shadow:0 2px 3px rgba(0,0,0,.6);
+  transform-origin:50% 100%;transform:rotate(-24deg);transition:transform .3s cubic-bezier(.34,1.4,.64,1);
+}
+.lev-b{padding:11px 13px;flex:1;}
+.lev-n{font-family:var(--mono);font-size:8.5px;letter-spacing:.13em;color:var(--brass-lt);opacity:.55;margin-bottom:4px;}
+.lev-q{font-size:12.5px;line-height:1.55;}
+.lev.thrown{background:linear-gradient(180deg,#0E5C42,#083A2A);border-color:var(--green);}
+.lev.thrown .lev-h::after{transform:rotate(24deg);background:linear-gradient(180deg,#9BF0CC,var(--green));}
+.lev.thrown .lev-n{color:#8FE3C4;opacity:1;}
+.lev.clack{animation:clack .34s ease;border-color:var(--red);}
+@keyframes clack{0%,100%{transform:translateX(0);}22%{transform:translateX(-7px);}62%{transform:translateX(5px);}}
+.lev:disabled{cursor:default;}
+.lev-why{
+  font-size:11.5px;line-height:1.6;color:#8FE3C4;padding:9px 13px 3px 57px;
+}
+
+/* ═══ 4 · THE METERS ═══ */
+.meters{display:flex;gap:13px;justify-content:center;flex-wrap:wrap;}
+.mtr{flex:1;min-width:132px;max-width:210px;}
+.mtr-case{
+  background:linear-gradient(168deg,var(--cream),var(--cream-dk));border-radius:9px 9px 5px 5px;
+  padding:11px 9px 8px;box-shadow:0 4px 12px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.6);
+  border:2px solid var(--brass-dk);
+}
+.mtr-face{position:relative;height:76px;}
+.mtr-l{
+  font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;text-align:center;
+  color:var(--ink);margin-top:7px;padding-top:7px;border-top:1px solid rgba(0,0,0,.18);opacity:.75;
+}
+.mtr.hot .mtr-l{color:var(--red);opacity:1;font-weight:500;}
+.mtr.spoke .mtr-l{color:var(--green);opacity:1;font-weight:500;}
+.mtr-read{font-family:var(--mono);font-size:15px;text-align:center;color:var(--brass-lt);margin-top:11px;}
+.hold-row{margin-top:20px;}
+.temps{display:flex;flex-direction:column;gap:8px;margin-top:15px;}
+.temp{
+  background:linear-gradient(180deg,#4A2229,#2E141A);border:1px solid rgba(247,107,98,.45);
+  color:#F7B3AB;border-radius:9px;padding:10px 13px;font-family:var(--font);font-size:12.5px;
+  font-style:italic;cursor:pointer;transition:all .16s;text-align:left;line-height:1.5;
+}
+.temp:hover:not(:disabled){background:linear-gradient(180deg,#5E2C35,#3A1A22);}
+.temp:disabled{opacity:.35;cursor:default;}
+.temp.pressed{border-color:var(--red);background:linear-gradient(180deg,#6E3039,#452028);}
+.mtr-note{font-size:12px;line-height:1.65;color:var(--cream-dk);text-align:center;margin-top:15px;opacity:.78;}
+
+/* feedback line, engraved not boxed */
+.say{
+  font-size:13px;line-height:1.7;padding:13px 0 2px;margin-top:15px;
+  border-top:1px solid rgba(201,162,39,.22);
+}
+.say.g{color:#8FE3C4;}
+.say.b{color:#F7B3AB;}
+.say b{color:var(--cream);}
+
+/* ═══ END — THE SLIP, COMPLETED ═══ */
+.end{display:none;padding:44px 14px 70px;}
+.end.show{display:block;animation:up .6s ease;}
+@keyframes up{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+.end-h{text-align:center;margin-bottom:26px;}
+.end-e{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:var(--brass-lt);margin-bottom:11px;}
+.end-t{font-family:var(--serif);font-size:29px;line-height:1.16;}
+.fslip{
+  background:var(--cream);color:var(--ink);border-radius:3px;padding:24px 22px;max-width:430px;margin:0 auto;
+  box-shadow:0 14px 34px rgba(0,0,0,.6);font-family:var(--mono);position:relative;
+}
+.stamp{
+  position:absolute;top:12px;right:14px;border:2.5px solid #B5251B;color:#B5251B;
+  border-radius:4px;padding:5px 10px;font-size:9.5px;letter-spacing:.14em;font-weight:500;
+  transform:rotate(9deg);opacity:0;animation:thud .45s .35s ease forwards;
+}
+.stamp.miss{border-color:#8A7F68;color:#8A7F68;}
+@keyframes thud{0%{opacity:0;transform:rotate(9deg) scale(2.4);}70%{opacity:.95;transform:rotate(9deg) scale(.94);}100%{opacity:.9;transform:rotate(9deg) scale(1);}}
+.fslip-h{text-align:center;font-size:9px;letter-spacing:.2em;color:#8A7F68;padding-bottom:12px;margin-bottom:14px;border-bottom:1.5px solid var(--cream-dk);}
+.fslip-q{font-family:var(--font);font-size:14px;font-style:italic;line-height:1.75;margin-bottom:14px;}
+.fslip-n{font-family:var(--font);font-size:12.5px;line-height:1.7;color:#4A4234;}
+.fslip-n b{color:var(--ink);}
+/* the slip comes back with the blanks filled in — the payoff as data, not prose */
+.ffields{margin-top:15px;padding-top:14px;border-top:1.5px solid var(--cream-dk);}
+.ff{display:flex;justify-content:space-between;gap:12px;align-items:baseline;padding:7px 0;}
+.ff + .ff{border-top:1px dotted var(--cream-dk);}
+.ff-k{font-size:9px;letter-spacing:.11em;color:#8A8579;flex-shrink:0;}
+.ff-v{font-size:12px;font-weight:500;text-align:right;color:#1B5E8A;}
+.ff-v.blank{color:#B0AA9C;font-style:italic;font-weight:400;}
+
+/* small engraved plate, riveted to the board */
+.plate{
+  max-width:430px;margin:22px auto 0;border-radius:6px;padding:15px 18px;position:relative;
+  background:linear-gradient(168deg,var(--brass-lt),var(--brass) 42%,var(--brass-dk));
+  box-shadow:0 4px 0 rgba(0,0,0,.45),0 7px 16px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.5);
+}
+.plate::before,.plate::after{
+  content:'';position:absolute;top:50%;transform:translateY(-50%);width:6px;height:6px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#FFF3C4,#6B520C);box-shadow:inset 0 -1px 1px rgba(0,0,0,.5);
+}
+.plate::before{left:7px;}
+.plate::after{right:7px;}
+.plate-l{
+  font-family:var(--mono);font-size:8px;letter-spacing:.2em;text-align:center;
+  color:rgba(10,32,40,.5);margin-bottom:11px;
+}
+.pl{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;line-height:1.5;
+  color:#3A2E08;text-shadow:0 1px 0 rgba(255,255,255,.35);
+  padding:6px 12px;text-align:center;
+}
+.pl + .pl{border-top:1px solid rgba(10,32,40,.15);}
+.again{
+  display:block;margin:26px auto 0;background:linear-gradient(180deg,var(--brass-lt),var(--brass) 45%,var(--brass-dk));
+  color:var(--navy-dk);border:none;border-radius:8px;padding:12px 26px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;cursor:pointer;
+  box-shadow:0 3px 0 #5C4708,0 5px 10px rgba(0,0,0,.4);
+}
+.again:active{transform:translateY(3px);box-shadow:0 0 0 #5C4708;}
+.mute{position:fixed;bottom:13px;right:13px;z-index:99;background:linear-gradient(180deg,#4E3928,#2A1D16);border:1px solid var(--brass-dk);color:var(--brass-lt);border-radius:8px;width:36px;height:36px;font-size:14px;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,.5);}
+.mute.off{opacity:.5;}
+</style>
+</head>
+<body>
+
+<button class="mute" id="mute" title="Mute">🔊</button>
+
+<div class="board">
+
+  <div class="mast">
+    <div class="mast-plate" id="mast-plate">—</div>
+    <div class="mast-t" id="mast-t">—</div>
+    <div class="mast-s" id="mast-s">—</div>
+
+    <div class="lamps">
+      <div class="lamp" id="lamp-1"><div class="lamp-b"></div><div class="lamp-t">SLIP</div></div>
+      <div class="lamp" id="lamp-2"><div class="lamp-b"></div><div class="lamp-t">PATCH</div></div>
+      <div class="lamp" id="lamp-3"><div class="lamp-b"></div><div class="lamp-t">ORDER</div></div>
+      <div class="lamp" id="lamp-4"><div class="lamp-b"></div><div class="lamp-t">LINE</div></div>
+    </div>
+  </div>
+
+  <!-- ─────── 1 · THE SLIP ─────── -->
+  <div class="station" id="st1">
+    <div class="st-engrave">— ONE —</div>
+    <div class="st-name">Read the slip</div>
+    <div class="st-note" id="note-1">—</div>
+
+    <div class="slip">
+      <div class="slip-h" id="slip-h">RESINC · CALL SLIP</div>
+      <div id="slip-rows"></div>
+      <div class="slip-gap"><span id="slip-today">TODAY</span><span id="slip-gap-v"></span></div>
+    </div>
+
+    <div id="s1-say"></div>
+
+    <div id="s1b" style="display:none;">
+      <div class="st-note" style="margin-top:24px;margin-bottom:0;">So which line is this? Throw the switch.</div>
+      <div class="tog-row">
+        <button class="tog" data-c="fresh"><div class="tog-b"></div><div class="tog-t">FRESH</div></button>
+        <button class="tog" data-c="aged"><div class="tog-b"></div><div class="tog-t">AGED</div></button>
+      </div>
+      <div id="s1b-say"></div>
+    </div>
+  </div>
+
+  <!-- ─────── 2 · THE PATCH BAY ─────── -->
+  <div class="station shut" id="st2">
+    <div class="st-engrave">— TWO —</div>
+    <div class="st-name">Patch only what carries</div>
+    <div class="st-note" id="note-2">—</div>
+    <div class="st-shut-note" id="shut2">◦ station closed ◦</div>
+
+    <div id="b2" style="display:none;">
+      <div class="metal bay" id="bay">
+        <div class="rivet" style="top:7px;left:7px;"></div>
+        <div class="rivet" style="top:7px;right:7px;"></div>
+        <div class="rivet" style="bottom:7px;left:7px;"></div>
+        <div class="rivet" style="bottom:7px;right:7px;"></div>
+        <svg id="cables"></svg>
+        <div class="jacks" id="jacks"></div>
+      </div>
+      <div class="bay-foot">
+        <div class="bay-count" id="bay-count"><b>0</b> patched</div>
+        <button class="pull" id="ring" disabled>RING THROUGH</button>
+      </div>
+      <div id="s2-say"></div>
+    </div>
+  </div>
+
+  <!-- ─────── 3 · THE LEVER BANK ─────── -->
+  <div class="station shut" id="st3">
+    <div class="st-engrave">— THREE —</div>
+    <div class="st-name">Throw them in order</div>
+    <div class="st-note" id="note-3">—</div>
+    <div class="st-shut-note" id="shut3">◦ station closed ◦</div>
+
+    <div id="b3" style="display:none;">
+      <div class="bay-count" style="margin-bottom:13px;" id="lev-count">NEXT · <b>1</b></div>
+      <div class="levers" id="levers"></div>
+      <div id="s3-say"></div>
+    </div>
+  </div>
+
+  <!-- ─────── 4 · THE LINE ─────── -->
+  <div class="station shut" id="st4">
+    <div class="st-engrave">— FOUR —</div>
+    <div class="st-name">Now hold the line</div>
+    <div class="st-note">You've asked the question that matters. Two needles on the board now: yours and hers. Keep yours flat until hers moves.</div>
+    <div class="st-shut-note" id="shut4">◦ station closed ◦</div>
+
+    <div id="b4" style="display:none;">
+      <div class="say g" id="ask-line" style="border-top:none;padding-top:0;margin-top:0;font-style:italic;color:var(--cream);">—</div>
+
+      <div class="meters" style="margin-top:22px;">
+        <div class="mtr" id="mtr-you">
+          <div class="mtr-case">
+            <div class="mtr-face">
+              <svg width="100%" height="76" viewBox="0 0 150 76" preserveAspectRatio="xMidYMid meet">
+                <path d="M 18 68 A 57 57 0 0 1 132 68" fill="none" stroke="rgba(0,0,0,.16)" stroke-width="1.5"></path>
+                <path d="M 96 22 A 57 57 0 0 1 132 68" fill="none" stroke="#D8493E" stroke-width="3.5"></path>
+                <line id="ndl-you" x1="75" y1="68" x2="75" y2="16" stroke="#0A2028" stroke-width="2.2" stroke-linecap="round" transform="rotate(-52 75 68)"></line>
+                <circle cx="75" cy="68" r="5" fill="#0A2028"></circle>
+              </svg>
+            </div>
+            <div class="mtr-l">YOUR LINE</div>
+          </div>
+          <div class="mtr-read" id="read-you">— —</div>
+        </div>
+        <div class="mtr" id="mtr-her">
+          <div class="mtr-case">
+            <div class="mtr-face">
+              <svg width="100%" height="76" viewBox="0 0 150 76" preserveAspectRatio="xMidYMid meet">
+                <path d="M 18 68 A 57 57 0 0 1 132 68" fill="none" stroke="rgba(0,0,0,.16)" stroke-width="1.5"></path>
+                <path d="M 96 22 A 57 57 0 0 1 132 68" fill="none" stroke="#1AA378" stroke-width="3.5"></path>
+                <line id="ndl-her" x1="75" y1="68" x2="75" y2="16" stroke="#0A2028" stroke-width="2.2" stroke-linecap="round" transform="rotate(-52 75 68)"></line>
+                <circle cx="75" cy="68" r="5" fill="#0A2028"></circle>
+              </svg>
+            </div>
+            <div class="mtr-l">HER LINE</div>
+          </div>
+          <div class="mtr-read" id="read-her">— —</div>
+        </div>
+      </div>
+
+      <div class="hold-row">
+        <button class="pull" id="open" style="width:100%;">OPEN THE LINE</button>
+      </div>
+      <div class="mtr-note" id="line-note">Four or five seconds of dead air is fine. It only feels like a minute.</div>
+
+      <div class="temps" id="temps">
+        <button class="temp" data-t="busy" disabled>"I think you guys were a little bit busy at the time."</button>
+        <button class="temp" data-t="price" disabled>"Was it the price that put you off, or the timing?"</button>
+        <button class="temp" data-t="there" disabled>"…Sandra? You still there?"</button>
+      </div>
+      <div id="s4-say"></div>
+
+      <div id="s5" style="display:none;">
+        <div class="st-engrave" style="margin-top:26px;">— AND ONE MORE THING —</div>
+        <div class="st-note" id="note-5" style="margin-bottom:16px;">—</div>
+        <div class="levers" id="resolve"></div>
+        <div id="s5-say"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ─────── END ─────── -->
+<div class="end" id="end">
+  <div class="end-h">
+    <div class="end-e" id="end-e">SLIP COMPLETED</div>
+    <div class="end-t" id="end-t">The line held.</div>
+  </div>
+
+  <div class="fslip">
+    <div class="stamp" id="stamp">DIAGNOSED</div>
+    <div class="fslip-h">RESINC · CALL SLIP · SANDRA M.</div>
+    <div class="fslip-q" id="fq">—</div>
+    <div class="ffields">
+      <div class="ff"><span class="ff-k">WHY IT FELL OVER</span><span class="ff-v" id="ff1">—</span></div>
+      <div class="ff"><span class="ff-k">BILL NOW</span><span class="ff-v" id="ff2">—</span></div>
+      <div class="ff"><span class="ff-k">BOOK FOR</span><span class="ff-v" id="ff3">—</span></div>
+    </div>
+  </div>
+
+  <div class="plate">
+    <div class="plate-l">◦ FIXED TO THE BOARD ◦</div>
+    <div class="pl">SAY "ENERGY ASSESSMENT" — NEVER "SOLAR"</div>
+    <div class="pl">THE SLIP IS THE REP'S VERSION · SHE OVERRULES IT</div>
+    <div class="pl">WARM IS NOT BOOKED · DON'T CLOSE BEFORE THE BILL</div>
+  </div>
+
+  <button class="again" id="againBtn">—</button>
+</div>
+
+<script>
+/* ══════════ SOUND ══════════ */
+var AC = null, MUTED = false;
+function ac(){
+  if (AC === null) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { AC = false; } }
+  return AC;
+}
+function tone(f, dur, type, vol, delay){
+  if (MUTED) return;
+  var c = ac(); if (!c) return;
+  if (c.state === 'suspended') c.resume();
+  var t0 = c.currentTime + (delay || 0);
+  var o = c.createOscillator(), g = c.createGain();
+  o.type = type || 'sine';
+  o.frequency.setValueAtTime(f, t0);
+  g.gain.setValueAtTime(0, t0);
+  g.gain.linearRampToValueAtTime(vol, t0 + 0.008);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(g); g.connect(c.destination);
+  o.start(t0); o.stop(t0 + dur + 0.02);
+}
+function sThunk(){ tone(150, 0.09, 'square', 0.05); tone(90, 0.13, 'sine', 0.05, 0.015); }
+function sClack(){ tone(300, 0.055, 'square', 0.05); tone(170, 0.09, 'square', 0.035, 0.03); }
+function sPull(){  tone(240, 0.07, 'sawtooth', 0.04); tone(420, 0.1, 'triangle', 0.035, 0.04); }
+function sBuzz(){  tone(105, 0.24, 'sawtooth', 0.055); }
+function sBell(){  tone(1320, 0.16, 'sine', 0.06); tone(1760, 0.3, 'sine', 0.05, 0.05); }
+function sChime(){ [660, 880, 1100, 1320].forEach(function(f, i){ tone(f, 0.22, 'sine', 0.055, i * 0.1); }); }
+document.getElementById('mute').addEventListener('click', function(){
+  MUTED = !MUTED;
+  this.textContent = MUTED ? '🔇' : '🔊';
+  this.classList.toggle('off', MUTED);
+  if (!MUTED) sClack();
+});
+
+/* ══════════ THE TWO SLIPS ══════════ */
+var SLIPS = [
+{
+  key:'aged', plate:'ALPHA HIPPO · POSITION 4 · SLIP 1 OF 2',
+  title:'Put her back<em>on the line.</em>',
+  intro:"She agreed to an assessment four months ago and never sat it. Your job on this board isn't to sell — it's to reconnect a line that went quiet, and find out what cut it.",
+  head:'RESINC · CALL SLIP · KELLYVILLE NSW',
+  today:'TODAY · 14 JUL', gap:'<b>4 MONTHS</b> SINCE THE VISIT',
+  rows:[
+    { k:'LEAD CREATED TIME', v:'12 MAR', tap:'created' },
+    { k:'ORIGINAL APPOINTMENT', v:'15 MAR · 6:00 PM', tap:'appt' },
+    { k:'SUBSCRIBER', v:'SANDRA M.' },
+    { k:'PARTNER', v:'DARREN' },
+    { k:'CALLED BY', v:'LEVI · DOOR' },
+    { k:'AT', v:'WRIGHTS ROAD' },
+    { k:'QUOTED', v:'$600 / QUARTER' },
+    { k:'REP REMARK', v:'SHED OUT BACK' }
+  ],
+  note1:"Two dates come through on every slip and they are not interchangeable. Tap the one that says the rep was standing at her door.",
+  kindRight:'aged',
+  kindFb:{
+    aged:[true,"<b>Aged, and the switch changes the whole call.</b> Four months on she's forgotten anyone came at all, so the visit gets named as a month — \"back in March\" is easier to place, and it doesn't matter if the slip is slightly off."],
+    fresh:[false,"<b>Not across a four month gap.</b> Fresh is days, not months — the reason it fell over would still be live and still in the room. Here she has moved on entirely, which is a different call to make."]
+  },
+  note2:"Eight sockets on the board, five of them carry the aged opener. Plug the wrong ones and you're not warming her up, you're reciting a file at her.",
+  jacks:[
+    { j:'partner', t:"PARTNER'S<br>NAME", in:1 },
+    { j:'month',   t:'MONTH OF<br>THE VISIT', in:1 },
+    { j:'rep',     t:"REP'S<br>NAME", in:1 },
+    { j:'street',  t:'STREET', in:1 },
+    { j:'bill',    t:'BILL SHE<br>QUOTED', in:1 },
+    { j:'apptday', t:'EXACT APPT<br>DAY', in:0 },
+    { j:'time',    t:'APPT TIME<br>6:00 PM', in:0 },
+    { j:'shed',    t:'THE SHED<br>OUT BACK', in:0 }
+  ],
+  jacksRight:5,
+  jacksWin:"<b>All five, nothing spare.</b> Partner, month, rep and street go through as one block — then the bill on its own, last, because it's the strongest thing on the slip. She forgot the street. She has not forgotten what she pays.",
+  jacksLose:"Five carry the aged opener: partner, month, rep, street, then the bill.",
+  note3:"The aged opener runs about a minute, and the sequence is doing the work. Throw the levers in the order you'd actually speak them.",
+  levers:[
+    { o:1, t:'"Hi Sandra, how\'s it going? It\'s Jordan calling from RESINC. Does that sound familiar?"', why:'The name check. On an aged line this is a real memory test, not a formality.' },
+    { o:2, t:'"No worries, I don\'t expect you to remember, it was some time ago now."', why:'The let-off. It stops a "no" from being awkward, so she can admit she doesn\'t remember without feeling rude.' },
+    { o:3, t:'"We had a chat with you and Darren back in March — one of our fellas Levi came round to the place on Wrights Road to see if we can help you save some money on your power bills."', why:'The block — partner, month, rep, street, all in one breath. Not a run of separate prompts.' },
+    { o:4, t:'▌▌  hold — let her place the conversation', why:'The hold. Room to place the conversation before you ask her anything at all.' },
+    { o:5, t:'"You\'d mentioned to him you were sitting around six hundred a quarter at the time. Is that still the case, or did you manage to get them lower?"', why:"The clincher, on its own and deliberately last. People forget names and streets. They don't forget what they're paying." },
+    { o:6, t:'"…and it never ended up happening. Were there any particular concerns at the time, or was it something we did?"', why:'Only now does the appointment get named, with no date on it — and the concerns question hangs straight off it.' }
+  ],
+  presentOrder:[5,1,4,6,2,3],
+  leversWin:"<b>Straight through, first go.</b> About a minute end to end — the aged line has to earn its way to the concerns question, where a fresh line gets there in twenty seconds flat.",
+  ask:'"Yeah, so you were booked in for an assessment back then and it never ended up happening. Were there any particular concerns at the time, or was it something we did?"',
+  heldQuote:'"Honestly? Darren was working nights that month and we just never got round to it. And the bill\'s actually gone up since — we\'re closer to eight hundred now."',
+  heldFields:['DARREN ON NIGHTS','~$800 / QTR  \u2191 WAS $600','WEEKNIGHTS AFTER 6PM'],
+  brokeQuote:'"…Yeah. Yeah, I suppose we were pretty busy."',
+  extra:null,
+  nextLabel:'NEXT SLIP \u2192', nextHash:'#fresh'
+},
+{
+  key:'fresh', plate:'ALPHA HIPPO · POSITION 4 · SLIP 2 OF 2',
+  title:'He said yes<em>on Wednesday.</em>',
+  intro:"Same board, five days instead of four months. Almost everything you just learned about the aged line is now the wrong move — watch which sockets go dark.",
+  head:'RESINC · CALL SLIP · PENRITH NSW',
+  today:'TODAY · MON 14 JUL', gap:'<b>5 DAYS</b> SINCE THE VISIT',
+  rows:[
+    { k:'LEAD CREATED TIME', v:'WED 9 JUL', tap:'created' },
+    { k:'ORIGINAL APPOINTMENT', v:'FRI 11 JUL · 5:30 PM', tap:'appt' },
+    { k:'SUBSCRIBER', v:'MARCUS T.' },
+    { k:'PARTNER', v:'ROSE' },
+    { k:'CALLED BY', v:'DALLAS · DOOR' },
+    { k:'AT', v:'THE KINGSWAY' },
+    { k:'QUOTED', v:'$520 / QUARTER' },
+    { k:'REP REMARK', v:'TWO STOREY · TILE' }
+  ],
+  note1:"Same two dates, same rule. Tap the one that says the rep was standing at his door.",
+  kindRight:'fresh',
+  kindFb:{
+    fresh:[true,"<b>Fresh, and that changes your job.</b> He remembers Wednesday perfectly — he just doesn't know whether RESINC is us or one of the others who've rung since. So \"does that sound familiar\" is a company name check here, not a memory test."],
+    aged:[false,"<b>Five days isn't aged.</b> He hasn't forgotten anything — the reason it fell over is still live and still in the room, which is a different problem to a cold memory."]
+  },
+  note2:"Same eight sockets. Only four carry a fresh opener — and two that were essential a moment ago will now cost you the call.",
+  jacks:[
+    { j:'rep',     t:"REP'S<br>NAME", in:1 },
+    { j:'partner', t:"PARTNER'S<br>NAME", in:1 },
+    { j:'visitday',t:'VISIT DAY<br>WEDNESDAY', in:1 },
+    { j:'apptday', t:'APPT DAY<br>FRIDAY', in:1 },
+    { j:'month',   t:'MONTH OF<br>THE VISIT', in:0 },
+    { j:'street',  t:'STREET', in:0 },
+    { j:'bill',    t:'BILL HE<br>QUOTED', in:0 },
+    { j:'roof',    t:'TWO STOREY<br>TILE ROOF', in:0 }
+  ],
+  jacksRight:4,
+  jacksWin:"<b>Four, and no more.</b> Rep, partner, and both days named as days. No street, no bill, no month — you don't need them, and reciting the street to someone you saw on Wednesday sounds like a call centre and turns a warm lead cold.",
+  jacksLose:"A fresh opener carries four: rep, partner, the visit day and the appointment day.",
+  note3:"Fresh is four beats and under twenty seconds. No let-off line, no block, no hold, no bill — it goes almost straight to the question.",
+  levers:[
+    { o:1, t:'"Hi Marcus, how\'s it going? It\'s Jordan calling from RESINC. Does that sound familiar?"', why:'Same words, different job. Here it\'s checking he knows which company is ringing, not whether he remembers being visited.' },
+    { o:2, t:'"You were speaking with Dallas on Wednesday, and we had you and Rose booked in for an energy assessment on Friday. It just didn\'t end up going ahead on the day."', why:'Both events, both as specific days. The visit is what he remembers; the appointment is what he didn\'t do, and it\'s what the next question hangs off.' },
+    { o:3, t:'"No dramas at all, that\'s actually why I\'m ringing."', why:"The fresh equivalent of the let-off line. It takes the blame out of the room before you ask, so he can be honest without feeling told off." },
+    { o:4, t:'"Were there any particular concerns that came up, or was it something we did?"', why:'Same question as the aged line, reached in a fifth of the time — because there was no memory to rebuild first.' }
+  ],
+  presentOrder:[4,1,3,2],
+  leversWin:"<b>Twenty seconds, start to question.</b> That's the whole difference: the aged line spends a minute earning the right to ask, the fresh line just asks.",
+  ask:'"No dramas at all, that\'s actually why I\'m ringing. Were there any particular concerns that came up, or was it something we did?"',
+  heldQuote:'"Yeah, look — Rose got called into a late shift on the Friday and I didn\'t want to sit through it on my own. She\'s the one who handles the bills."',
+  heldFields:['ROSE ON A LATE SHIFT','$520 / QTR  · UNCHANGED','A TIME ROSE IS ACTUALLY FREE'],
+  brokeQuote:'"…Nah. Nah, nothing like that."',
+  extra:{
+    note:"On a fresh line the reason is still live, and it will kill the next appointment exactly the way it killed the last one. So you have a job the aged call doesn't.",
+    opts:[
+      { ok:false, t:'Book the soonest slot going — he sounds keen and warm leads cool off fast.', why:"He is warm, and he'll probably say yes. But Rose is the one who handles the bills and you still don't know when she's free — you've just rebooked the same no-show." },
+      { ok:true,  t:"Find out when Rose is genuinely free before you put anything in the diary.", why:"That's the fresh job. The reason is live, so move it before you book — otherwise the reason that killed the last appointment kills this one too." },
+      { ok:false, t:'Run the assessment with just Marcus and send Rose the details after.', why:"She handles the bills and she's a decision maker. Going ahead without her is how you get a booking that sits, and then goes nowhere." }
+    ],
+    win:"<b>That's the whole point of a fresh call.</b> Diagnose it, then clear it, then book — in that order.",
+    lose:"<b>The reason is still in the room.</b> Clear it before the diary, or you book the same fall-over twice."
+  },
+  nextLabel:'\u21BB START OVER', nextHash:''
+}
+];
+
+var IDX = location.hash === '#fresh' ? 1 : 0;
+var S = SLIPS[IDX];
+
+/* ══════════ SHARED ══════════ */
+var ST = { brokeLine:null, held:0, extraPatched:0, levErrors:0, extraWrong:0 };
+function say(id, ok, html){
+  document.getElementById(id).innerHTML = '<div class="say ' + (ok ? 'g' : 'b') + '">' + html + '</div>';
+}
+function litLamp(n){ document.getElementById('lamp-' + n).classList.add('lit'); }
+function openStation(n){
+  var st = document.getElementById('st' + n);
+  st.classList.remove('shut');
+  document.getElementById('shut' + n).style.display = 'none';
+  document.getElementById('b' + n).style.display = 'block';
+  st.scrollIntoView({ behavior:'smooth', block:'start' });
+  if (n === 3) buildLevers();
+}
+function finishStation(n){
+  litLamp(n);
+  sBell();
+  if (n < 4) setTimeout(function(){ openStation(n + 1); }, 620);
+  else if (S.extra) setTimeout(showExtra, 700);
+  else setTimeout(closeSlip, 900);
+}
+
+/* ══════════ RENDER THE SLIP ══════════ */
+document.getElementById('mast-plate').textContent = S.plate;
+document.getElementById('mast-t').innerHTML = S.title;
+document.getElementById('mast-s').textContent = S.intro;
+document.getElementById('slip-h').textContent = S.head;
+document.getElementById('slip-today').textContent = S.today;
+document.getElementById('slip-gap-v').innerHTML = S.gap;
+document.getElementById('note-1').textContent = S.note1;
+document.getElementById('note-2').textContent = S.note2;
+document.getElementById('note-3').textContent = S.note3;
+document.getElementById('ask-line').textContent = S.ask;
+
+var rowHost = document.getElementById('slip-rows');
+S.rows.forEach(function(r){
+  var d = document.createElement('div');
+  d.className = 'slip-r' + (r.tap ? ' tap' : '');
+  if (r.tap) d.setAttribute('data-d', r.tap);
+  d.innerHTML = '<span class="slip-k">' + r.k + '</span><span class="slip-v">' + r.v + '</span>';
+  rowHost.appendChild(d);
+});
+
+/* ══════════ 1 · THE SLIP ══════════ */
+var SLIP_FB = {
+  created:[true,  "<b>That's the visit.</b> Lead Created Time is the day the rep actually stood at the door — the one thing they might remember. The other line is the slot they booked and didn't sit."],
+  appt:[false, "<b>That's the appointment, not the visit.</b> Name it as the visit and you're asking them to remember something that never happened. Lead Created Time is the day the rep was there."]
+};
+var slipDone = false;
+var slipRows = document.querySelectorAll('.slip-r.tap');
+for (var i = 0; i < slipRows.length; i++) {
+  slipRows[i].addEventListener('click', function(){
+    if (slipDone) return;
+    slipDone = true;
+    var r = SLIP_FB[this.getAttribute('data-d')];
+    this.classList.add(r[0] ? 'right' : 'wrong');
+    if (!r[0]) document.querySelector('.slip-r.tap[data-d="created"]').classList.add('right');
+    sThunk();
+    say('s1-say', r[0], r[1]);
+    document.getElementById('s1b').style.display = 'block';
+  });
+}
+
+var togDone = false;
+var togs = document.querySelectorAll('.tog');
+for (var t = 0; t < togs.length; t++) {
+  togs[t].addEventListener('click', function(){
+    if (togDone) return;
+    togDone = true;
+    var c = this.getAttribute('data-c');
+    var r = S.kindFb[c];
+    this.classList.add(r[0] ? 'on' : 'bad');
+    sPull();
+    for (var k = 0; k < togs.length; k++) togs[k].disabled = true;
+    if (!r[0]) {
+      var right = document.querySelector('.tog[data-c="' + S.kindRight + '"]');
+      setTimeout(function(){ right.classList.add('on'); sPull(); }, 450);
+    }
+    say('s1b-say', r[0], r[1]);
+    setTimeout(function(){ finishStation(1); }, 700);
+  });
+}
+
+/* ══════════ 2 · THE PATCH BAY ══════════ */
+var patched = {}, bayLocked = false;
+var jackHost = document.getElementById('jacks');
+S.jacks.forEach(function(j){
+  var b = document.createElement('button');
+  b.className = 'jack';
+  b.setAttribute('data-j', j.j);
+  b.setAttribute('data-in', j.in);
+  b.innerHTML = '<div class="jack-h"></div><div class="jack-t">' + j.t + '</div>';
+  jackHost.appendChild(b);
+});
+var jacks = document.querySelectorAll('.jack');
+var svg = document.getElementById('cables');
+
+function drawCables(){
+  var bay = document.getElementById('bay');
+  var br = bay.getBoundingClientRect();
+  if (!br.width) return;
+  svg.setAttribute('viewBox', '0 0 ' + br.width + ' ' + br.height);
+  svg.innerHTML = '';
+  var ox = 14, oy = br.height - 6;
+  Object.keys(patched).forEach(function(j){
+    var el = document.querySelector('.jack[data-j="' + j + '"] .jack-h');
+    if (!el) return;
+    var r = el.getBoundingClientRect();
+    var x = r.left - br.left + r.width / 2;
+    var y = r.top - br.top + r.height / 2;
+    var p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    p.setAttribute('d', 'M ' + ox + ' ' + oy + ' Q ' + ((ox + x) / 2) + ' ' + Math.min(br.height - 8, Math.max(y, oy) + 34) + ' ' + x + ' ' + y);
+    p.setAttribute('fill', 'none');
+    p.setAttribute('stroke', 'rgba(0,174,239,.55)');
+    p.setAttribute('stroke-width', '2.6');
+    p.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(p);
+  });
+}
+function updateBay(){
+  var n = Object.keys(patched).length;
+  document.getElementById('bay-count').innerHTML = '<b>' + n + '</b> patched';
+  document.getElementById('ring').disabled = n === 0;
+  drawCables();
+}
+for (var jj = 0; jj < jacks.length; jj++) {
+  jacks[jj].addEventListener('click', function(){
+    if (bayLocked) return;
+    var id = this.getAttribute('data-j');
+    if (patched[id]) { delete patched[id]; this.classList.remove('in'); sClack(); }
+    else { patched[id] = 1; this.classList.add('in'); sThunk(); }
+    updateBay();
+  });
+}
+window.addEventListener('resize', function(){ if (Object.keys(patched).length) drawCables(); });
+
+document.getElementById('ring').addEventListener('click', function(){
+  if (bayLocked) return;
+  bayLocked = true;
+  this.disabled = true;
+  var right = 0, extra = 0, missed = 0;
+  for (var i = 0; i < jacks.length; i++) {
+    var el = jacks[i], id = el.getAttribute('data-j'), belongs = el.getAttribute('data-in') === '1';
+    el.disabled = true;
+    el.classList.remove('in');
+    if (patched[id] && belongs) { el.classList.add('ok'); right++; }
+    else if (patched[id] && !belongs) { el.classList.add('no'); extra++; }
+    else if (!patched[id] && belongs) { missed++; }
+  }
+  ST.extraPatched = extra;
+  var clean = right === S.jacksRight && extra === 0;
+  clean ? sBell() : sBuzz();
+  var msg;
+  if (clean) msg = S.jacksWin;
+  else {
+    msg = '<b>The board buzzed.</b> ' + S.jacksLose;
+    if (extra) msg += ' You patched ' + extra + " that doesn't belong.";
+    if (missed) msg += ' And ' + missed + ' you need was left dark.';
+  }
+  say('s2-say', clean, msg);
+  setTimeout(function(){ finishStation(2); }, 750);
+});
+
+/* ══════════ 3 · THE LEVER BANK ══════════ */
+var nextLev = 1;
+var TOTAL_LEV = S.levers.length;
+function buildLevers(){
+  var host = document.getElementById('levers');
+  host.innerHTML = '';
+  // never present them in answer order — that would give the sequence away
+  var list = S.presentOrder.map(function(o){
+    return S.levers.filter(function(x){ return x.o === o; })[0];
+  });
+  list.forEach(function(b){
+    var el = document.createElement('button');
+    el.className = 'lev';
+    el.setAttribute('data-o', b.o);
+    el.innerHTML = '<span class="lev-h"></span><span class="lev-b"><span class="lev-n">— NOT THROWN —</span><span class="lev-q">' + b.t + '</span></span>';
+    host.appendChild(el);
+    el.addEventListener('click', function(){ throwLever(this, b.o, b.why); });
+  });
+  document.getElementById('lev-count').innerHTML = 'NEXT · <b>1</b> of ' + TOTAL_LEV;
+}
+function throwLever(el, o, why){
+  if (el.classList.contains('thrown')) return;
+  if (o !== nextLev) {
+    ST.levErrors++;
+    el.classList.add('clack');
+    sBuzz();
+    setTimeout(function(){ el.classList.remove('clack'); }, 340);
+    return;
+  }
+  el.classList.add('thrown');
+  el.disabled = true;
+  el.querySelector('.lev-n').textContent = 'POSITION ' + nextLev;
+  sPull();
+  var w = document.createElement('div');
+  w.className = 'lev-why';
+  w.textContent = why;
+  el.parentNode.insertBefore(w, el.nextSibling);
+  nextLev++;
+  if (nextLev > TOTAL_LEV) {
+    document.getElementById('lev-count').innerHTML = 'ALL ' + TOTAL_LEV + ' THROWN';
+    var clean = ST.levErrors === 0;
+    say('s3-say', clean, clean ? S.leversWin :
+      '<b>Through, after ' + ST.levErrors + ' lever' + (ST.levErrors > 1 ? 's' : '') + ' that sprang back.</b> The order is the work.');
+    setTimeout(function(){ finishStation(3); }, 780);
+  } else {
+    document.getElementById('lev-count').innerHTML = 'NEXT · <b>' + nextLev + '</b> of ' + TOTAL_LEV;
+  }
+}
+
+/* ══════════ 4 · THE LINE ══════════ */
+var REST = -52, HOT = 46, TARGET = 4.5;
+var lineTimer = null, jitter = null, lineStart = 0, lineDone = false;
+function setNeedle(w, deg){ document.getElementById('ndl-' + w).setAttribute('transform', 'rotate(' + deg + ' 75 68)'); }
+function stopLine(){
+  if (lineTimer) { clearInterval(lineTimer); lineTimer = null; }
+  if (jitter) { clearInterval(jitter); jitter = null; }
+  var tp = document.querySelectorAll('.temp');
+  for (var i = 0; i < tp.length; i++) tp[i].disabled = true;
+  document.getElementById('open').disabled = true;
+}
+document.getElementById('open').addEventListener('click', function(){
+  if (lineTimer || lineDone) return;
+  this.disabled = true;
+  this.textContent = 'LINE OPEN';
+  sPull();
+  var tp = document.querySelectorAll('.temp');
+  for (var i = 0; i < tp.length; i++) tp[i].disabled = false;
+  document.getElementById('line-note').textContent = 'Say nothing. Whatever comes out of them is what you close on.';
+  lineStart = Date.now();
+  jitter = setInterval(function(){
+    if (lineDone) return;
+    setNeedle('you', REST + (Math.random() * 2.4 - 1.2));
+    setNeedle('her', REST + (Math.random() * 1.6 - 0.8));
+  }, 140);
+  lineTimer = setInterval(function(){
+    var el = (Date.now() - lineStart) / 1000;
+    ST.held = el;
+    document.getElementById('read-you').textContent = el.toFixed(1) + 's';
+    if (el >= TARGET) {
+      lineDone = true;
+      stopLine();
+      setNeedle('you', REST);
+      setNeedle('her', HOT);
+      document.getElementById('mtr-her').classList.add('spoke');
+      document.getElementById('read-her').textContent = 'SPEAKING';
+      document.getElementById('read-her').style.color = '#8FE3C4';
+      document.getElementById('line-note').textContent = 'They went first.';
+      sChime();
+      say('s4-say', true, "<b>You held it.</b> Four and a half seconds of nothing felt a great deal longer than it was — and because you put no words in their mouth, the reason you're holding is theirs.");
+      setTimeout(function(){ finishStation(4); }, 950);
+    }
+  }, 100);
+});
+var TEMP_FB = {
+  busy:'This is the real one, word for word. The customer never confirmed it — so he\'d invented a reason, had no diagnosis, and booked on goodwill and nothing else.',
+  price:'You just handed them an objection that might never have existed. Now you\'ll never hear the real one.',
+  there:'Three seconds of quiet is not a dropped call. You blinked first, and they were mid-thought.'
+};
+var temps = document.querySelectorAll('.temp');
+for (var tt = 0; tt < temps.length; tt++) {
+  temps[tt].addEventListener('click', function(){
+    if (lineDone) return;
+    lineDone = true;
+    ST.brokeLine = this.getAttribute('data-t');
+    stopLine();
+    this.classList.add('pressed');
+    setNeedle('you', HOT);
+    setNeedle('her', REST);
+    document.getElementById('mtr-you').classList.add('hot');
+    document.getElementById('read-you').textContent = 'YOU SPOKE';
+    document.getElementById('read-you').style.color = '#F7B3AB';
+    sBuzz();
+    document.getElementById('line-note').textContent = 'Your needle jumped at ' + ST.held.toFixed(1) + ' seconds.';
+    say('s4-say', false, '<b>You filled it.</b> ' + TEMP_FB[ST.brokeLine] + ' Ask it, then wait — four or five seconds of dead air is fine.');
+    setTimeout(function(){ finishStation(4); }, 1150);
+  });
+}
+
+/* ══════════ 5 · FRESH ONLY — CLEAR THE LIVE REASON ══════════ */
+function showExtra(){
+  var box = document.getElementById('s5');
+  document.getElementById('note-5').textContent = S.extra.note;
+  var host = document.getElementById('resolve');
+  host.innerHTML = '';
+  var done = false;
+  S.extra.opts.forEach(function(o){
+    var el = document.createElement('button');
+    el.className = 'lev';
+    el.innerHTML = '<span class="lev-h"></span><span class="lev-b"><span class="lev-q">' + o.t + '</span></span>';
+    host.appendChild(el);
+    el.addEventListener('click', function(){
+      if (done) return;
+      done = true;
+      var all = host.querySelectorAll('.lev');
+      for (var i = 0; i < all.length; i++) all[i].disabled = true;
+      if (o.ok) { el.classList.add('thrown'); sPull(); }
+      else { el.classList.add('clack'); ST.extraWrong = 1; sBuzz(); }
+      var w = document.createElement('div');
+      w.className = 'lev-why';
+      w.style.color = o.ok ? '#8FE3C4' : '#F7B3AB';
+      w.textContent = o.why;
+      el.parentNode.insertBefore(w, el.nextSibling);
+      say('s5-say', o.ok, o.ok ? S.extra.win : S.extra.lose);
+      setTimeout(closeSlip, 1000);
+    });
+  });
+  box.style.display = 'block';
+  box.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+/* ══════════ END — THE SLIP, COMPLETED ══════════ */
+function closeSlip(){
+  var held = ST.brokeLine === null;
+  document.getElementById('end-e').textContent = held ? 'SLIP COMPLETED' : 'SLIP RETURNED INCOMPLETE';
+  document.getElementById('end-t').textContent = held ? 'The line held.' : 'You spoke first.';
+  var stamp = document.getElementById('stamp');
+  stamp.textContent = held ? 'DIAGNOSED' : 'NO DIAGNOSIS';
+  if (!held) stamp.classList.add('miss');
+
+  var F = ['ff1', 'ff2', 'ff3'];
+  if (held) {
+    document.getElementById('fq').textContent = S.heldQuote;
+    S.heldFields.forEach(function(v, i){
+      var el = document.getElementById(F[i]);
+      el.textContent = v;
+      el.classList.remove('blank');
+    });
+  } else {
+    document.getElementById('fq').textContent = S.brokeQuote;
+    F.forEach(function(id){
+      var el = document.getElementById(id);
+      el.textContent = 'not established';
+      el.classList.add('blank');
+    });
+  }
+
+  var btn = document.getElementById('againBtn');
+  btn.textContent = S.nextLabel;
+  btn.addEventListener('click', function(){
+    location.hash = S.nextHash;
+    location.reload();
+  });
+
+  var e = document.getElementById('end');
+  e.classList.add('show');
+  e.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+</script>
+</body>
+</html>
